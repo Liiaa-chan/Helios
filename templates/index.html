@@ -90,19 +90,14 @@
             <div
                 class="slide-track d-flex justify-content-center align-items-center"
             >
-
                 {%for svg in svgs%}
-                    <div class="slide d-flex align-items-center gap-3">
-                        <img
-                            src="{{svg.svg}}"
-                            height="48"
-                            width="48"
-                            alt=""
-                        />
-                        <p class="text-lg pt-3 fw-semibold zinc-500">{{svg.label}}</p>
-                    </div>
+                <div class="slide d-flex align-items-center gap-3">
+                    <img src="{{svg.svg}}" height="48" width="48" alt="" />
+                    <p class="text-lg pt-3 fw-semibold zinc-500">
+                        {{svg.label}}
+                    </p>
+                </div>
                 {%endfor%}
-
             </div>
         </div>
     </div>
@@ -165,11 +160,13 @@
                         class="d-flex gap-4 justify-content-center align-items-center py-8 px-8 service-border"
                     >
                         <div>
-                            <h4 class="text-lg fw-medium zinc-100">Web Design</h4>
+                            <h4 class="text-lg fw-medium zinc-100">
+                                Web Design
+                            </h4>
                             <p class="text-sm fw-regular zinc-500">
-                                Skilled in slicing designs from Figma using HTML,
-                                CSS3, JavaScript, and other technologies to create
-                                responsive web interfaces.
+                                Skilled in slicing designs from Figma using
+                                HTML, CSS3, JavaScript, and other technologies
+                                to create responsive web interfaces.
                             </p>
                         </div>
                     </div>
@@ -183,9 +180,9 @@
                                 Programming
                             </h4>
                             <p class="text-sm fw-regular zinc-500">
-                                Knowledgeable in fundamental programming concepts
-                                using various languages such as Python, C, and
-                                JavaScript.
+                                Knowledgeable in fundamental programming
+                                concepts using various languages such as Python,
+                                C, and JavaScript.
                             </p>
                         </div>
                     </div>
@@ -249,9 +246,7 @@
             <!-- Experience -->
             <div class="col-lg-4 experience h-75">
                 <div class="wrapper-exp p-4">
-                    <h2
-                        class="text-lg fw-semibold mb-16 text-start zinc-100"
-                    >
+                    <h2 class="text-lg fw-semibold mb-16 text-start zinc-100">
                         Experience
                     </h2>
 
@@ -399,17 +394,18 @@
         </div>
 
         <div class="row gap-lg justify-content-center d-flex">
-            <!-- Card-1 -->
+            <!-- Looping For Card -->
+            {% for project in projects %}
             <a
-                href=""
+                href="{{ url_for('pages.' + project.endpoint) }}"
                 class="wrapping-card col-lg-4 col-md-6"
                 data-aos="zoom-in"
-                data-aos-duration="300"
+                data-aos-duration="{{ project.duration }}"
             >
                 <!-- Image -->
                 <img
-                    src="{{url_for('static', filename='assets/project/7-1.png')}}"
-                    alt="Project-image"
+                    src="{{ url_for('static', filename=project.image) }}"
+                    alt="{{ project.title }}-image"
                     width="auto"
                     height="60"
                     loading="lazy"
@@ -419,188 +415,17 @@
                 <!-- Paragraf -->
                 <div class="container-text">
                     <h2 class="title-card fw-semibold zinc-100 text-lg">
-                        Exotic
+                        {{ project.title }}
                     </h2>
                     <p class="text-sm zinc-500 fw-regular">
-                        Exotic: Platform designed to showcase stunning artworks,
-                        providing a space for artists to display their
-                        creativity.
+                        {{ project.desc }}
                     </p>
                     <p class="link-fake text-sm zinc-500 fw-semibold">
                         View <i class="uil uil-arrow-right"></i>
                     </p>
                 </div>
             </a>
-            <!-- Card-1 -->
-
-            <!-- Card-2 -->
-            <a
-                href=""
-                class="wrapping-card col-lg-4 col-md-6"
-                data-aos="zoom-in"
-                data-aos-duration="400"
-            >
-                <!-- Image -->
-                <img
-                    src="{{url_for('static', filename='assets/project/1.png')}}"
-                    alt="Project-image"
-                    width="auto"
-                    height="60"
-                    loading="lazy"
-                    class="rounded-2 mb-16"
-                />
-
-                <!-- Paragraf -->
-                <div class="container-text">
-                    <h2 class="title-card fw-semibold zinc-100 text-lg">
-                        Linear
-                    </h2>
-                    <p class="text-sm zinc-500 fw-regular">
-                        Fresh mathematical LMS for mobile apps, providing
-                        interactive and effective learning anytime, anywhere.
-                    </p>
-                    <p class="link-fake text-sm zinc-500 fw-semibold">
-                        View <i class="uil uil-arrow-right"></i>
-                    </p>
-                </div>
-            </a>
-            <!-- Card-2 -->
-
-            <!-- Card-3 -->
-            <a
-                href=""
-                class="wrapping-card col-lg-4 col-md-6"
-                data-aos="zoom-in"
-                data-aos-duration="500"
-            >
-                <!-- Image -->
-                <img
-                    src="{{url_for('static', filename='assets/project/2.jpg')}}"
-                    alt="Project-image"
-                    width="auto"
-                    height="60"
-                    loading="lazy"
-                    class="rounded-2 mb-16"
-                />
-
-                <!-- Paragraf -->
-                <div class="container-text">
-                    <h2 class="title-card fw-semibold zinc-100 text-lg">
-                        Nest
-                    </h2>
-                    <p class="text-sm zinc-500 fw-regular">
-                        Enjoy music with a fresh and simple design in Nest,
-                        creating a comfortable and enjoyable listening
-                        experience.
-                    </p>
-                    <p class="link-fake text-sm zinc-500 fw-semibold">
-                        View <i class="uil uil-arrow-right"></i>
-                    </p>
-                </div>
-            </a>
-            <!-- Card-3 -->
-
-            <!-- Card-4 -->
-            <a
-                href=""
-                class="wrapping-card col-lg-4 col-md-6"
-                data-aos="zoom-in"
-                data-aos-duration="600"
-            >
-                <!-- Image -->
-                <img
-                    src="{{url_for('static', filename='assets/project/3.jpg')}}"
-                    alt="Project-image"
-                    width="auto"
-                    height="60"
-                    loading="lazy"
-                    class="rounded-2 mb-16"
-                />
-
-                <!-- Paragraf -->
-                <div class="container-text">
-                    <h2 class="title-card fw-semibold zinc-100 text-lg">
-                        Steps
-                    </h2>
-                    <p class="text-sm zinc-500 fw-regular">
-                        Steps makes healthy living enjoyable with features like
-                        water intake, sleep tracking, and muscle mass
-                        monitoring.
-                    </p>
-                    <p class="link-fake text-sm zinc-500 fw-semibold">
-                        View <i class="uil uil-arrow-right"></i>
-                    </p>
-                </div>
-            </a>
-            <!-- Card-4 -->
-
-            <!-- Card-5 -->
-            <a
-                href=""
-                class="wrapping-card col-lg-4 col-md-6"
-                data-aos="zoom-in"
-                data-aos-duration="700"
-            >
-                <!-- Image -->
-                <img
-                    src="{{url_for('static', filename='assets/project/4.png')}}"
-                    alt="Project-image"
-                    width="auto"
-                    height="60"
-                    loading="lazy"
-                    class="rounded-2 mb-16"
-                />
-
-                <!-- Paragraf -->
-                <div class="container-text">
-                    <h2 class="title-card fw-semibold zinc-100 text-lg">
-                        Otto
-                    </h2>
-                    <p class="text-sm zinc-500 fw-regular">
-                        Otto offers automotive procurement with a sleek design,
-                        ensuring users enjoy a more pleasant and efficient
-                        experience.
-                    </p>
-                    <p class="link-fake text-sm zinc-500 fw-semibold">
-                        View <i class="uil uil-arrow-right"></i>
-                    </p>
-                </div>
-            </a>
-            <!-- Card-5 -->
-
-            <!-- Card-6 -->
-            <a
-                href=""
-                class="wrapping-card col-lg-4 col-md-6"
-                data-aos="zoom-in"
-                data-aos-duration="800"
-            >
-                <!-- Image -->
-                <img
-                    src="{{url_for('static', filename='assets/project/5.jpg')}}"
-                    alt="Project-image"
-                    width="auto"
-                    height="60"
-                    loading="lazy"
-                    class="rounded-2 mb-16"
-                />
-
-                <!-- Paragraf -->
-                <div class="container-text">
-                    <h2 class="title-card fw-semibold zinc-100 text-lg">
-                        Buddaya
-                    </h2>
-                    <p class="text-sm zinc-500 fw-regular">
-                        Buddaya facilitates Indonesian ethnography. The app
-                        inspires youth to engage in creative projects and
-                        cultural preservation.
-                    </p>
-                    <p class="link-fake text-sm zinc-500 fw-semibold">
-                        View <i class="uil uil-arrow-right"></i>
-                    </p>
-                </div>
-            </a>
-            <!-- Card-6 -->
+            {% endfor %}
         </div>
     </div>
 </section>
