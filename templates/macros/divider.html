@@ -1,0 +1,14 @@
+{% macro divider(label, z_index="z-10") %}
+<div
+    class="sticky top-0 {{ z_index }} sm:top-15 flex items-stretch border-y border-zinc-800 w-auto -mx-4 bg-zinc-900"
+>
+    <h2
+        class="text-xl px-4 py-2 font-medium sm:px-6 sm:py-3 sm:text-2xl text-zinc-100 uppercase tracking-tight"
+    >
+        {{ label }}
+    </h2>
+    <div
+        class="flex-1 border-l border-zinc-800 bg-diagonal-lines opacity-40"
+    ></div>
+</div>
+{% endmacro %}

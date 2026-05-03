@@ -1,0 +1,77 @@
+{% from "macros/divider.html" import divider %} {% macro render_equipments(data)
+%}
+<!-- Hapus -mx-4 agar tetap di dalam grid utama -->
+<div
+    class="grid grid-cols-1 md:grid-cols-2 border border-zinc-800 divide-y md:divide-y-0 md:divide-x divide-zinc-800 overflow-hidden"
+>
+    <!-- KOLOM KIRI: SOFTWARE -->
+    <div class="flex flex-col">
+        <!-- Header: Tanpa padding agar divider memenuhi lebar kolom -->
+        <p
+            class="border-b border-zinc-800 bg-zinc-900/50 text-zinc-100 text-3xl font-bold p-2"
+        >
+            Software
+        </p>
+
+        <div class="p-5 md:p-6 space-y-5">
+            {% for cat in data.get('software', []) %}
+            <div class="space-y-2">
+                <h4
+                    class="text-zinc-100 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2"
+                >
+                    <span class="w-1 h-3 bg-teal-500"></span> {{ cat.category }}
+                </h4>
+                <ul
+                    class="space-y-1 pl-4 list-disc marker:text-teal-500 text-zinc-400 text-sm"
+                >
+                    {% for item in cat['items'] %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- KOLOM KANAN: HARDWARE -->
+    <div class="flex flex-col bg-zinc-900/10">
+        <p
+            class="border-b border-zinc-800 bg-zinc-900/50 text-zinc-100 text-3xl font-bold p-2"
+        >
+            Hardware
+        </p>
+
+        <div class="p-5 md:p-6 space-y-5">
+            {% for cat in data.get('hardware', []) %}
+            <div class="space-y-2">
+                <h4
+                    class="text-zinc-100 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2"
+                >
+                    <span class="w-1 h-3 bg-orange-500"></span> {{ cat.category
+                    }}
+                </h4>
+
+                {% if cat.name %}
+                <p
+                    class="text-zinc-300 font-medium text-[11px] pl-3 opacity-70"
+                >
+                    {{ cat.name }}
+                </p>
+                {% endif %}
+
+                <ul
+                    class="space-y-1 pl-4 list-disc marker:text-orange-500 text-zinc-400 text-sm"
+                >
+                    {% if cat.get('items') %} {% for item in cat['items'] %}
+                    <li>{{ item }}</li>
+                    {% endfor %} {% elif cat.get('specs') %} {% for spec in
+                    cat['specs'] %}
+                    <li>{{ spec }}</li>
+                    {% endfor %} {% endif %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endmacro %}

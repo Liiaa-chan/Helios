@@ -1,9 +1,90 @@
+<!-- Extend base layout/template -->
 {% extends "base/base.html"%}
-
+<!-- Import Components -->
+{% from "macros/divider.html" import divider %}
+<!--Skill  -->
+{% from "macros/skill.html" import render_skill %}
+<!-- Equipments -->
+{% from "macros/equipments.html" import render_equipments %}
 <!-- Title -->
 {%block title%} Dian Wicaksono {%endblock%}
 
 <!-- Content -->
 {% block content %}
-<h1 class="text-zinc-50">Hello World</h1>
+<!-- Section 1 -->
+<section class="py-6 space-y-4">
+    <h1 class="text-zinc-50 text-2xl font-medium md:text-3xl">
+        Hey, I'm <span class="text-teal-400">Dian Wicaksono</span>!
+    </h1>
+    <p class="font-normal text-base text-zinc-200">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum modi
+        aspernatur in architecto voluptate assumenda esse tenetur rerum commodi
+        magnam autem repellat, mollitia culpa ad ipsa explicabo laboriosam nam
+        iusto ab veritatis error quibusdam beatae sequi. Nostrum repellat
+        commodi iure, nisi dignissimos beatae illum. Accusamus fugiat hic, illo
+        necessitatibus, animi quam ratione, quia aperiam quas quibusdam aliquam
+        itaque natus reprehenderit obcaecati! Minima suscipit incidunt commodi
+        est sint eveniet assumenda itaque, quam veniam alias temporibus iste
+        unde cupiditate voluptatum nemo delectus ex voluptas officia vitae
+        libero voluptates placeat fuga possimus. Accusamus optio ad reiciendis
+        quaerat, itaque similique ea eius totam a?
+    </p>
+
+    <!-- Socials -->
+    <div class="space-y-2 flex flex-col">
+        <span class="text-zinc-50 font-semibold text-base">Find me on</span>
+
+        <!-- Kontainer Flex dengan gap agar antar tombol tidak menempel -->
+        <div class="flex flex-wrap justify-start items-center gap-2">
+            {% for social in socials %}
+            <a
+                href="{{ social.link }}"
+                target="_blank"
+                class="flex items-center justify-center space-x-2 py-2 px-3 border border-zinc-800 hover:bg-zinc-800 transition-colors duration-200"
+            >
+                <!-- Ikon dinamis berdasarkan data -->
+                <i
+                    class="fa-brands {{ social.icon }} text-xl text-zinc-200"
+                ></i>
+
+                <!-- Label dinamis -->
+                <p class="text-zinc-200 text-base font-normal">
+                    {{ social.name }}
+                </p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Divider -->
+{{ divider("Skills", "z-[11]") }}
+
+<!-- Section 2 -->
+<section class="space-y-4 md:py-6">
+    <p class="text-base text-zinc-100 font-normal">
+        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde est, quam
+        quasi, tempora exercitationem nulla inventore molestiae veritatis ipsa
+        qui aspernatur facilis? Eius asperiores debitis inventore quos quisquam
+        vitae temporibus? Cupiditate pariatur quia beatae consequuntur commodi
+        blanditiis ullam necessitatibus ut dolore accusamus! Ipsam explicabo
+        molestiae ducimus sunt fugit in quis.
+    </p>
+
+    {{ render_skill(skills) }}
+</section>
+
+{{ divider("Equipments", "z-[11]") }}
+<section class="py-6 space-y-4">
+    <p class="text-base text-zinc-100 font-normal">
+        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Unde est, quam
+        quasi, tempora exercitationem nulla inventore molestiae veritatis ipsa
+        qui aspernatur facilis? Eius asperiores debitis inventore quos quisquam
+        vitae temporibus? Cupiditate pariatur quia beatae consequuntur commodi
+        blanditiis ullam necessitatibus ut dolore accusamus! Ipsam explicabo
+        molestiae ducimus sunt fugit in quis.
+    </p>
+    {{ render_equipments(equipment_data) }}
+</section>
+<!--  -->
 {% endblock %}

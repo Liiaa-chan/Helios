@@ -1,11 +1,9 @@
-from flask import Flask, render_template
+from flask import Flask
+from routes.web import pages
 
 app = Flask(__name__)
+app.register_blueprint(pages)
 
-@app.route('/')
-def home():
-    return render_template('index.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
-

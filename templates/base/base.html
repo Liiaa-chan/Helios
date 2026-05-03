@@ -20,20 +20,27 @@
             referrerpolicy="no-referrer"
         />
 
+        <!-- Devicon -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
+        />
+
         <!-- Data AoS (Optional) -->
     </head>
-    <body class="bg-zinc-950 min-h-screen flex justify-center">
-        <!-- Wrapper Content -->
-        <div
-            class="w-full max-w-6xl mx-auto px-4 border border-x-zinc-800 bg-zinc-900"
+    <body class="bg-zinc-950 min-h-screen flex flex-col items-center">
+        <!-- Navigasi dipindah ke sini agar bisa Full Width -->
+        {% include "includes/_navbar.html" %}
+
+        <!-- Wrapper Content (Hanya untuk konten utama) -->
+        <main
+            class="w-full max-w-6xl mx-auto px-4 border-x border-zinc-800 bg-zinc-900 flex-grow"
         >
-            <!-- Navigation -->
-
             <!-- Main Content -->
-            {%block content%} {%endblock%}
-
-            <!-- Footer -->
-        </div>
+            {% block content %} {% endblock %}
+        </main>
+        <!-- Footer -->
+        {% include "includes/_footer.html" %}
         <!-- Javascript -->
         <script src="{{url_for('static', filename='js/script.js')}}"></script>
     </body>
