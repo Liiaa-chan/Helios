@@ -1,7 +1,7 @@
 {% extends "base/base.html"%}
 
 <!-- title -->
-{%block title%} Helios {%endblock%}
+{%block title%} Dian Wicaksono {%endblock%}
 
 <!-- Content -->
 {%block content%}
@@ -9,9 +9,6 @@
 <section class="mt-20 mb-64">
     <nav class="navbar navbar-expand-lg fixed-top background">
         <div class="container-fluid container-xxl">
-            <a class="navbar-brand fw-semibold zinc-50 text-2xl" href="#home"
-                >Helios</a
-            >
             <button
                 class="navbar-toggler"
                 type="button"
@@ -24,28 +21,20 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav fw-medium ms-auto text-sm fw-regular">
-                    <a class="nav-link zinc-100" href="#about">About</a>
-                    <a class="nav-link zinc-100" href="#resume">Resume</a>
-                    <a class="nav-link zinc-100" href="#articles">Articles</a>
-                    <a class="nav-link zinc-100" href="#project">Project</a>
-                    <a class="nav-link zinc-100" href="#exp">Contacts</a>
+                <div class="navbar-nav fw-medium ms-0 text-sm fw-regular">
+                    {# Looping Navigasi #} {% for item in nav_items %}
+                    <a class="nav-link zinc-100" href="{{ item.url }}"
+                        >{{ item.name }}</a
+                    >
+                    {% endfor %}
                 </div>
-                <!-- <div
-                    class="toggle-button d-flex justify-content-end align-items-center"
-                >
-                    <i
-                        class="uil uil-moonset text-3xl theme-button teal-400"
-                        id="theme-button"
-                    ></i>
-                </div> -->
             </div>
         </div>
     </nav>
 </section>
 
 <!-- Home Section -->
-<section id="home" class="header pt-lg-60 pb-50">
+<section id="about">
     <div class="container-xxl container-fluid">
         <div class="row gap-lg-0 gap-5">
             <div class="col-lg-8 col-12 my-auto">
@@ -82,116 +71,6 @@
     </div>
 </section>
 <!-- Home Section -->
-
-<!-- slider -->
-<section id="slider" class="slider">
-    <div class="container-fluid container-xxl">
-        <div class="slider">
-            <div
-                class="slide-track d-flex justify-content-center align-items-center"
-            >
-                {%for svg in svgs%}
-                <div class="slide d-flex align-items-center gap-3">
-                    <img src="{{svg.svg}}" height="48" width="48" alt="" />
-                    <p class="text-lg pt-3 fw-semibold zinc-500">
-                        {{svg.label}}
-                    </p>
-                </div>
-                {%endfor%}
-            </div>
-        </div>
-    </div>
-</section>
-<!-- slider -->
-
-<!-- About Section -->
-<section id="about" class="about pt-50 pb-50">
-    <div class="container-xxl container-fluid">
-        <div class="row gap-lg">
-            <!-- About grid -->
-            <div class="col-lg-6">
-                <!-- Heading -->
-                <h2 class="text-lg fw-semibold zinc-100 text-start mb-16">
-                    About Me
-                </h2>
-                <!-- Heading -->
-                <p class="about-text text-normal fw-regular zinc-500">
-                    I am a professional freelancer specializing in technology,
-                    focusing on UI/UX Design and Front-End Development. With a
-                    high learning spirit, creativity, and a passion for
-                    challenges, I adapt to any situation effortlessly. My
-                    dedication to creating intuitive and engaging user
-                    experiences drives me to continuously expand my skills and
-                    knowledge. I strive to deliver high-quality results for
-                    every project, ensuring that my work contributes to the
-                    success and satisfaction of my clients. My ability to tackle
-                    complex problems and develop innovative solutions makes me a
-                    valuable asset in any team or project.
-                </p>
-            </div>
-
-            <!-- What i do -->
-            <div class="col-lg-6 what">
-                <!-- Heading -->
-                <h4 class="text-lg fw-semibold text-start mb-16 zinc-100">
-                    Services
-                </h4>
-                <!-- Heading -->
-
-                <div class="d-flex gap-2 flex-wrap flex-lg-nowrap">
-                    <!-- 1 -->
-                    <div
-                        class="d-flex gap-4 justify-content-center align-items-center px-8 py-8 service-border"
-                    >
-                        <div>
-                            <h4 class="text-normal fw-medium zinc-100">
-                                UI/UX Design
-                            </h4>
-                            <p class="text-sm fw-regular zinc-500">
-                                Skilled in design, wireframing, and prototyping
-                                using tools like Figma, delivering intuitive and
-                                engaging user experiences.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- 2 -->
-                    <div
-                        class="d-flex gap-4 justify-content-center align-items-center py-8 px-8 service-border"
-                    >
-                        <div>
-                            <h4 class="text-lg fw-medium zinc-100">
-                                Web Design
-                            </h4>
-                            <p class="text-sm fw-regular zinc-500">
-                                Skilled in slicing designs from Figma using
-                                HTML, CSS3, JavaScript, and other technologies
-                                to create responsive web interfaces.
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- 3 -->
-                    <div
-                        class="d-flex gap-4 justify-content-center align-items-center py-8 px-8 service-border"
-                    >
-                        <div>
-                            <h4 class="text-lg fw-medium zinc-100">
-                                Programming
-                            </h4>
-                            <p class="text-sm fw-regular zinc-500">
-                                Knowledgeable in fundamental programming
-                                concepts using various languages such as Python,
-                                C, and JavaScript.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- About Section -->
 
 <!-- Resume -->
 <section id="resume" class="resume pt-50 pb-50">

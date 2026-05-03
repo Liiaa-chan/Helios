@@ -1,6 +1,13 @@
 /* Navigation */
 @media (min-width: 992px) {
+
+
     .navbar-nav {
+        gap: 0.5rem;
+        /* Jarak antar tombol menu di mobile */
+    }
+
+    .nav-link {
         padding-inline: 0.75rem;
     }
 
@@ -11,42 +18,76 @@
 
 @media (max-width: 768px) {
     .navbar-nav {
-        padding-inline: none;
+        padding-inline: 0;
     }
 }
 
 /* Untuk browser berbasis WebKit (Chrome, Safari, dll.) */
 ::-webkit-scrollbar {
-    width: 10px; /* Lebar scrollbar */
+    width: 10px;
+    /* Lebar scrollbar */
 }
 
 ::-webkit-scrollbar-track {
-    background-color: #3f3f46; /* Warna track scrollbar */
-    border-radius: 10px; /* Sudut melengkung pada track */
+    background-color: #3f3f46;
+    /* Warna track scrollbar */
+    border-radius: 10px;
+    /* Sudut melengkung pada track */
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #71717a; /* Warna thumb (bagian yang bisa di-scroll) */
-    border-radius: 10px; /* Sudut melengkung pada thumb */
-    border: 2px solid #3f3f46; /* Tambahan border pada thumb */
+    background-color: #71717a;
+    /* Warna thumb (bagian yang bisa di-scroll) */
+    border-radius: 10px;
+    /* Sudut melengkung pada thumb */
+    border: 2px solid #3f3f46;
+    /* Tambahan border pada thumb */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #5c5c63; /* Warna thumb saat di-hover */
+    background-color: #5c5c63;
+    /* Warna thumb saat di-hover */
 }
 
 /* CSS untuk browser lain */
 body {
-    scrollbar-width: thin; /* Lebar tipis */
-    scrollbar-color: #71717a #3f3f46; /* Warna thumb dan track */
+    scrollbar-width: thin;
+    /* Lebar tipis */
+    scrollbar-color: #71717a #3f3f46;
+    /* Warna thumb dan track */
 }
 
-.navbar-brand:hover{
-    color: #fafafa;
+.navbar-toggler-icon {
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+}
+
+.navbar-toggler {
+    border-color: none;
+    /* Teal-400 */
+}
+
+.navbar {
+    border-bottom: 1px #27272a solid;
+}
+
+.nav-link {
+    padding-inline: 1rem !important;
+    /* Padding kanan-kiri link */
+    padding-block: 0.5rem;
+    color: #71717a;
+    /* Warna default (Zinc-500) */
 }
 
 .nav-link:hover {
-    color: #2dd4bf;
+    background-color: #18181b;
+    color: #fafafa;
+}
+
+.nav-link.active {
+    background-color: #18181b;
+    color: #fafafa !important;
+    /* Beri warna Teal agar menonjol dari menu lain */
+    font-weight: 500;
 }
 
 
@@ -91,30 +132,31 @@ body {
     margin: auto;
     overflow: hidden;
     position: relative;
-    width: 100%; /* Use percentage for responsiveness */
-    max-width: 1200px; /* Maximum width */
-    box-sizing: border-box; /* Include padding and border in width calculations */
-    mask-image: linear-gradient(
-        to right,
-        transparent,
-        white 20%,
-        white 80%,
-        transparent
-    );
+    width: 100%;
+    /* Use percentage for responsiveness */
+    max-width: 1200px;
+    /* Maximum width */
+    box-sizing: border-box;
+    /* Include padding and border in width calculations */
+    mask-image: linear-gradient(to right,
+            transparent,
+            white 20%,
+            white 80%,
+            transparent);
 }
 
 /* Slide track to hold the slides */
 .slide-track {
     display: flex;
     animation: scroll 40s linear infinite;
-    width: calc(
-        250px * 14
-    ); /* Adjust this dynamically with JavaScript for better responsiveness */
+    width: calc(250px * 14);
+    /* Adjust this dynamically with JavaScript for better responsiveness */
 }
 
 /* Individual slide */
 .slide {
-    flex: 0 0 auto; /* Prevent flex items from growing or shrinking */
+    flex: 0 0 auto;
+    /* Prevent flex items from growing or shrinking */
     height: 100px;
     width: 250px;
     display: flex;
@@ -126,9 +168,12 @@ body {
     0% {
         transform: translateX(0);
     }
+
     100% {
         transform: translateX(calc(-250px * 7));
-    } /* Adjust based on number of slides */
+    }
+
+    /* Adjust based on number of slides */
 }
 
 .slide-track:hover,
@@ -139,15 +184,19 @@ body {
 /* Responsive adjustments */
 @media (max-width: 1024px) {
     .slide {
-        width: 200px; /* Smaller width for tablets */
+        width: 200px;
+        /* Smaller width for tablets */
     }
+
     .slide-track {
         width: calc(200px * 14);
     }
+
     @keyframes scroll {
         0% {
             transform: translateX(0);
         }
+
         100% {
             transform: translateX(calc(-200px * 7));
         }
@@ -156,15 +205,19 @@ body {
 
 @media (max-width: 768px) {
     .slide {
-        width: 175px; /* Smaller width for mobile */
+        width: 175px;
+        /* Smaller width for mobile */
     }
+
     .slide-track {
         width: calc(175px * 14);
     }
+
     @keyframes scroll {
         0% {
             transform: translateX(0);
         }
+
         100% {
             transform: translateX(calc(-150px * 7));
         }
@@ -173,15 +226,19 @@ body {
 
 @media (max-width: 480px) {
     .slide {
-        width: 175px; /* Smaller width for small mobile */
+        width: 175px;
+        /* Smaller width for small mobile */
     }
+
     .slide-track {
         width: calc(125px * 14);
     }
+
     @keyframes scroll {
         0% {
             transform: translateX(0);
         }
+
         100% {
             transform: translateX(calc(-100px * 7));
         }
@@ -268,7 +325,7 @@ body {
 }
 
 .wrapping-card:hover {
-    background-color:  #18181b;
+    background-color: #18181b;
 }
 
 .wrapping-card:hover .title-card {
@@ -357,6 +414,7 @@ body {
     background-size: cover;
     border-radius: 100%;
 }
+
 .profile-picture-6 {
     background-image: url(../img/profile-6.jpg);
     width: 60px;
@@ -389,60 +447,68 @@ body {
     justify-content: center;
 }
 
-.button-comment:hover{
+.button-comment:hover {
     background-color: #27272a;
 }
 
-.wrapper-articles{
+.wrapper-articles {
     box-sizing: border-box;
     border-left: 0.5px solid #18181b;
 }
 
-.wrapper-articles a{
+.wrapper-articles a {
     text-decoration: none;
     padding: 1rem;
     border-radius: 8px;
 
 }
 
-.wrapper-articles a:hover{
+.wrapper-articles a:hover {
     background-color: #18181b;
 }
 
 /* Form */
 /* Custom styling for form-control in dark mode */
 .custom-form {
-    background-color: #3f3f46; /* Background sesuai keinginan */
-    border: 1px solid rgba(113, 113, 122, 0.7); /* Border lebih halus dengan opacity */
-    color: #f4f4f5; /* Text color in dark mode */
+    background-color: #3f3f46;
+    /* Background sesuai keinginan */
+    border: 1px solid rgba(113, 113, 122, 0.7);
+    /* Border lebih halus dengan opacity */
+    color: #f4f4f5;
+    /* Text color in dark mode */
     transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 /* Keep background consistent on focus */
 .custom-form:focus {
-    background-color: #3f3f46; /* Tetap sama saat focus */
-    border-color: #71717a; /* Warna border saat focus */
-    box-shadow: 0 0 0 0.25rem rgba(63, 63, 70, 0.7); /* Custom ring dengan shadow */
+    background-color: #3f3f46;
+    /* Tetap sama saat focus */
+    border-color: #71717a;
+    /* Warna border saat focus */
+    box-shadow: 0 0 0 0.25rem rgba(63, 63, 70, 0.7);
+    /* Custom ring dengan shadow */
     color: #f4f4f5;
-    outline: none; /* Remove default outline */
+    outline: none;
+    /* Remove default outline */
 }
 
 
 /* Optional: Tambahkan hover untuk interaksi lebih smooth */
 .custom-form:hover {
-    border-color: rgba(113, 113, 122, 0.7); /* Warna border lebih terang saat di-hover */
+    border-color: rgba(113, 113, 122, 0.7);
+    /* Warna border lebih terang saat di-hover */
 }
 
 
-.modal-header{
+.modal-header {
     border-bottom: none;
 }
 
-.modal-footer{
+.modal-footer {
     border-top: none;
 }
 
-.photo-profile{
+.photo-profile {
     background-image: url(../img/astro.jpeg);
     width: 48px;
     height: 48px;
@@ -451,16 +517,16 @@ body {
     border-radius: 100%;
 }
 
-.experience{
+.experience {
     border: 1px solid rgba(209, 209, 209, 0.1);
     border-radius: 8px;
 }
 
-.wrapper-exp{
+.wrapper-exp {
     box-sizing: border-box;
 }
 
-.background-rounded{
+.background-rounded {
     width: 48px;
     height: 42px;
     border-radius: 100%;
@@ -468,7 +534,7 @@ body {
     border: 1px solid rgba(209, 209, 209, 0.1);
 }
 
-.profile-company-1{
+.profile-company-1 {
     background-image: url(../img/logo-zona.png);
     width: 32px;
     height: 32px;
@@ -477,7 +543,7 @@ body {
     border-radius: 100%;
 }
 
-.profile-company-2{
+.profile-company-2 {
     background-image: url(../img/Helios.jpeg);
     width: 32px;
     height: 32px;
@@ -486,12 +552,12 @@ body {
     border-radius: 100%;
 }
 
-.button-cv{
+.button-cv {
     border-radius: 4px;
     background-color: #18181b;
 }
 
-.button-cv:hover{
+.button-cv:hover {
     background-color: #27272a;
 }
 
@@ -505,6 +571,7 @@ body {
 
 /* Responsive */
 @media (max-width: 576px) {
+
     /* Navigation */
     .navbar-nav {
         border: none;
@@ -547,6 +614,11 @@ body {
 }
 
 @media (min-width: 576px) and (max-width: 992px) {
+    .navbar-toggler {
+        margin-left: auto;
+        /* Teal-400 */
+    }
+
     .card-4-testimoni {
         margin-top: -24px;
     }
@@ -561,6 +633,6 @@ body {
 }
 
 
-.service-border{
+.service-border {
     border: 1px solid #18181b;
 }

@@ -70,3 +70,12 @@ PROJECTS = [
         "duration": 800,
     },
 ]
+
+# Navigation Items
+NAV_ITEMS = [
+    {"name": "About", "url": "#about"},
+    {"name": "Resume", "url": "#resume"},
+    {"name": "Articles", "url": "#articles"},
+    {"name": "Project", "url": "#project"},
+    {"name": "Contacts", "url": "#exp"},
+]
