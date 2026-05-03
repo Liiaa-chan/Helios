@@ -1,17 +1,9 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dian Wicaksono</title>
+{% extends "base/base.html"%}
 
-    <!-- Tailwindcss -->
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-  </head>
-  <body>
-    <h1 class="">Hello world</h1>
-  </body>
-</html>
+<!-- Title -->
+{%block title%} Dian Wicaksono {%endblock%}
+
+<!-- Content -->
+{% block content %}
+<h1 class="text-zinc-50">Hello World</h1>
+{% endblock %}

@@ -1,6 +1,26 @@
 {
-  "dependencies": {
-    "@tailwindcss/vite": "^4.2.4",
+  "name": "helios",
+  "version": "1.0.0",
+  "description": "Welcome to the Flask Project! This guide will help you clone and set up the project on your local machine, including activating the virtual environment and installing all dependencies to get you started.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "npx @tailwindcss/cli -i ./static/css/style.css -o ./static/dist/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Liiaa-chan/Helios.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Liiaa-chan/Helios/issues"
+  },
+  "homepage": "https://github.com/Liiaa-chan/Helios#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.4",
     "tailwindcss": "^4.2.4"
   }
 }

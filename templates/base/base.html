@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{%block title%}{%endblock%}</title>
+
+        <!-- Tailwindcss for Styling Purposes -->
+        <link
+            rel="stylesheet"
+            href="{{url_for('static',filename='dist/output.css')}}"
+        />
+
+        <!-- FontAwesome for icon and logo -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+            integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+
+        <!-- Data AoS (Optional) -->
+    </head>
+    <body class="bg-zinc-950 min-h-screen flex justify-center">
+        <!-- Wrapper Content -->
+        <div
+            class="w-full max-w-6xl mx-auto px-4 border border-x-zinc-800 bg-zinc-900"
+        >
+            <!-- Navigation -->
+
+            <!-- Main Content -->
+            {%block content%} {%endblock%}
+
+            <!-- Footer -->
+        </div>
+        <!-- Javascript -->
+        <script src="{{url_for('static', filename='js/script.js')}}"></script>
+    </body>
+</html>
