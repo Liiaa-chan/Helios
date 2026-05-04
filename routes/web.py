@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, abort
 from jinja2 import TemplateNotFound
+import json
 
 # Import Model
-from model.data import NAV_ITEMS, SOCIALS, SKILL, EQUIPMENT_DATA
+from model.models import NavItem, Social, Skill, Equipment
 
 # Inisiasi pages blueprint dengan folder templates sebagai views
 pages = Blueprint("pages", __name__, template_folder="templates")
@@ -15,16 +16,44 @@ ROUTE_MAPPINGS = {
 }
 
 
+def get_common_data():
+    """Fungsi pembantu untuk mengambil data dasar yang dibutuhkan semua halaman."""
+    nav_items = NavItem.query.all()
+    socials = Social.query.all()
+    skills = Skill.query.all()
+
+    # Mengambil dan memproses data Equipment
+    equipment_db = Equipment.query.all()
+    software_list = []
+    hardware_list = []
+
+    for eq in equipment_db:
+        # Mengubah kembali string JSON dari database menjadi list Python
+        details = json.loads(eq.data_list) if eq.data_list else []
+
+        if eq.type == "software":
+            software_list.append({"category": eq.category, "items": details})
+        else:
+            hardware_list.append(
+                {"category": eq.category, "name": eq.name, "specs": details}
+            )
+
+    equipment_data = {"software": software_list, "hardware": hardware_list}
+
+    return nav_items, socials, skills, equipment_data
+
+
 # Error halaman
 @pages.app_errorhandler(404)
 def page_not_found(e):
     # Mengembalikan template custom 404 dengan status code 404
+    nav_item, socials, skills, _ = get_common_data()
     return (
         render_template(
             "errors/404.html",
-            nav_item=NAV_ITEMS,
-            socials=SOCIALS,
-            skills=SKILL,  # Pastikan data global tetap dikirim agar navbar/footer tidak pecah
+            nav_item=nav_item,
+            socials=socials,
+            skills=skills,  # Pastikan data global tetap dikirim agar navbar/footer tidak pecah
         ),
         404,
     )
@@ -35,13 +64,14 @@ def create_route_handler(template_path, endpoint_name):
     """Creates route handler with unique endpoint"""
 
     def handler():
+        nav_item, socials, skills, equipment_data = get_common_data()
         try:
             return render_template(
                 template_path,
-                nav_item=NAV_ITEMS,
-                socials=SOCIALS,
-                skills=SKILL,
-                equipment_data=EQUIPMENT_DATA,
+                nav_item=nav_item,
+                socials=socials,
+                skills=skills,
+                equipment_data=equipment_data,
             )
         except TemplateNotFound:
             abort(404)
