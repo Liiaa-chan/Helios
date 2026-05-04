@@ -17,9 +17,9 @@
             {% for cat in data.get('software', []) %}
             <div class="space-y-2">
                 <h4
-                    class="text-zinc-100 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2"
+                    class="text-zinc-100 font-bold text-base flex items-center gap-2"
                 >
-                    <span class="w-1 h-3 bg-teal-500"></span> {{ cat.category }}
+                    {{ cat.category }}
                 </h4>
                 <ul
                     class="space-y-1 pl-4 list-disc marker:text-teal-500 text-zinc-400 text-sm"
@@ -45,18 +45,13 @@
             {% for cat in data.get('hardware', []) %}
             <div class="space-y-2">
                 <h4
-                    class="text-zinc-100 font-bold text-[10px] uppercase tracking-[0.2em] flex items-center gap-2"
+                    class="text-zinc-100 font-bold text-base flex items-center gap-2"
                 >
-                    <span class="w-1 h-3 bg-orange-500"></span> {{ cat.category
-                    }}
+                    {{ cat.category }}
                 </h4>
 
                 {% if cat.name %}
-                <p
-                    class="text-zinc-300 font-medium text-[11px] pl-3 opacity-70"
-                >
-                    {{ cat.name }}
-                </p>
+                <p class="text-zinc-300 font-medium text-sm">{{ cat.name }}</p>
                 {% endif %}
 
                 <ul

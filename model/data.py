@@ -51,35 +51,38 @@ SKILL = [
 EQUIPMENT_DATA = {
     "software": [
         {
-            "category": "Editor",
+            "category": "Code Editor / Text Editor",
             "items": [
                 "Visual Studio Code",
-                "Theme: GitHub Theme",
-                "Editor Font: Google Sans Code",
-                "Terminal Font: Geist Mono Nerd Font",
+                "Arduino IDE",
+                "Plugin: Platform Io (Like Arduino IDE in Visual Studio Code)",
+                "Nano",
+                "Vim",
             ],
         },
-        {"category": "Terminal", "items": ["Windows Terminal", "oh-my-posh", "Scoop"]},
-        {"category": "Media", "items": ["Figma", "GIMP", "OBS Studio"]},
+        {"category": "Terminal", "items": ["Windows Terminal", "oh-my-posh", "Termux", "Linux Terminal" ]},
+        {"category": "Design", "items": ["Figma", "Whimsical"]},
     ],
     "hardware": [
         {
             "category": "Laptop",
-            "name": "Lenovo Ideapad Gaming 3 15ACH6",
+            "name": "Advan Workmate",
             "specs": [
-                "AMD Ryzen 5 5600H",
-                "NVIDIA GeForce RTX 3050",
-                "16GB DDR4 RAM",
-                "512GB + 256GB SSD",
+                "AMD Ryzen 5 3500U",
+                "AMD Radeon RX Vega 8 Graphics",
+                "8GB DDR4 RAM",
+                "256GB SSD NVME M.2",
+                "14 Inch IPS, Resolution WUXGA (1920x1200), 16:10 ratio, 300 nits",
+                "Windows 11 Home",
             ],
         },
         {
             "category": "Peripherals",
             "items": [
-                "Monitor: Lenovo R27q-30",
-                "Keyboard: Press Play Essential75",
-                "Mouse: Noir M1 Nex",
-                "Mic: Fifine AM8",
+                "Keyboard: Unitech MXI",
+                "Deksmate: Gundam RX-78-2",
+                "Mouse: Philips Wire Standar ",
+                "True Wireless Stereo: Lenovo EA230",
             ],
         },
     ],
