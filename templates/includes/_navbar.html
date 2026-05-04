@@ -1,0 +1,66 @@
+<!-- 1. TOP NAVBAR (Desktop & Landscape) -->
+<nav
+    id="top-navbar"
+    class="sticky top-0 z-40 w-full border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md hidden sm:block"
+>
+    <!-- Kontainer internal untuk menyelaraskan menu dengan konten 6xl -->
+    <div
+        class="max-w-6xl mx-auto bg-zinc-900 border border-x-zinc-800 py-2 px-4"
+    >
+        <div class="flex justify-start">
+            <ul class="flex space-x-2">
+                {% for item in nav_item %}
+                <li class="last:border-r-0">
+                    <!-- Garis vertikal antar menu -->
+                    <a
+                        href="{{ item.url }}"
+                        class="block px-4 py-3 text-sm font-medium tracking-tight transition-all duration-200 
+                        {{ 'text-zinc-50 bg-zinc-800' if request.path == item.url else 'text-zinc-100 hover:text-zinc-50 hover:bg-zinc-800' }}"
+                    >
+                        {{ item.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 2. FLOATING ACTION BUTTON (Mobile Portrait) -->
+<div
+    id="mobile-fab-container"
+    class="fixed bottom-8 right-8 z-50 sm:hidden portrait:block sm:portrait:hidden"
+>
+    <!-- Popover Menu -->
+    <div
+        id="fab-menu"
+        class="absolute bottom-14 right-0 w-48 bg-zinc-900 border border-zinc-800 rounded-md overflow-hidden transition-all duration-300 origin-bottom-right scale-75 opacity-0 pointer-events-none"
+    >
+        <div class="p-2 flex flex-col">
+            {% for item in nav_item %}
+            <a
+                href="{{ item.url }}"
+                class="flex items-center gap-3 px-4 py-3 text-sm font-normal rounded-sm transition-colors 
+                {{ 'text-white bg-zinc-800' if request.path == item.url else 'text-zinc-400 hover:text-white hover:bg-zinc-800' }}"
+            >
+                <i
+                    class="fa-solid {{ item.icon if item.icon else 'fa-link' }} text-teal-400 w-5"
+                ></i>
+                {{ item.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Main Button -->
+    <button
+        id="fab-trigger"
+        type="button"
+        class="w-10 h-10 bg-zinc-800 text-zinc-950 rounded-full border border-zinc-700 flex items-center justify-center transition-transform active:scale-90 hover:scale-105"
+    >
+        <i
+            id="fab-icon-menu"
+            class="fa-solid fa-bars text-lg text-zinc-100"
+        ></i>
+    </button>
+</div>

@@ -1,0 +1,23 @@
+/* Fonts Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* Font Bebas Neue */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+/* Tailwindcss init */
+@import "tailwindcss";
+
+/* Custom Theme CSS */
+
+@theme {
+    --font-inter: "Inter", sans-serif;
+    --font-bebas-neue: "Bebas Neue", sans-serif;
+}
+
+@utility bg-diagonal-lines {
+    background-image: repeating-linear-gradient(-45deg,
+            transparent,
+            transparent 5px,
+            var(--color-zinc-800) 5px,
+            var(--color-zinc-700) 7px);
+}
