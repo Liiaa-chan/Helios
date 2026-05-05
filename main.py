@@ -8,20 +8,27 @@ app = Flask(__name__)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-IS_VERCEL = os.environ.get("VERCEL") == "1"
-
 # 1. Konfigurasi Dasar
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # 2. Pengaturan URI Database
-if IS_VERCEL or os.environ.get("DATABASE_URL"):
-    url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
-    if url and url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql://", 1)
-    app.config["SQLALCHEMY_DATABASE_URI"] = url
+IS_VERCEL = os.environ.get("VERCEL") == "1"
+
+if IS_VERCEL:
+    # Di Vercel: Ambil URL Postgres, jangan buat folder apa pun!
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL")
+    if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
+        app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
 else:
+    # Di Lokal: Gunakan SQLite dan buat folder jika belum ada
     db_path = os.path.join(basedir, "database", "helios.db")
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+    
+    with app.app_context():
+        folder_db = os.path.join(basedir, "database")
+        if not os.path.exists(folder_db):
+            os.makedirs(folder_db) # Ini aman karena di lokal bukan Read-Only
+        db.create_all()
 
 # Inisialisasi Database
 db.init_app(app)
