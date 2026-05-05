@@ -54,5 +54,13 @@ else:
     # Kita akan menggunakan Flask-Migrate via terminal atau dashboard
     print("Sistem Helios Server: Menggunakan cloud database.")
 
+@app.route('/init-db')
+def init_db():
+    try:
+        db.create_all()
+        return "Database berhasil diinisialisasi! Semua tabel telah dibuat."
+    except Exception as e:
+        return f"Gagal membuat tabel: {str(e)}"
+
 if __name__ == "__main__":
     app.run(debug=True)
