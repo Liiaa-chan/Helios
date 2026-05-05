@@ -12,7 +12,12 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # 2. Pengaturan URI Database
-db_url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+db_url = (
+    os.environ.get("DATABASE_URL") or 
+    os.environ.get("POSTGRES_URL") or 
+    os.environ.get("POSTGRES_URL_POSTGRES_URL") or # Nama dari gambar Anda
+    os.environ.get("POSTGRES_URL_DATABASE_URL")    # Nama alternatif dari gambar Anda
+)
 
 IS_VERCEL = os.environ.get("VERCEL") == "1"
 
