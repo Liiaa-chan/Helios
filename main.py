@@ -12,23 +12,20 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # 2. Pengaturan URI Database
+db_url = os.environ.get("DATABASE_URL") or os.environ.get("POSTGRES_URL")
+
 IS_VERCEL = os.environ.get("VERCEL") == "1"
 
 if IS_VERCEL:
-    # Di Vercel: Ambil URL Postgres, jangan buat folder apa pun!
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("POSTGRES_URL")
-    if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
-        app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace("postgres://", "postgresql://", 1)
+    if db_url:
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+        app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+    else:
+        raise RuntimeError("DATABASE_URL tidak ditemukan di Environment Variables Vercel!")
 else:
-    # Di Lokal: Gunakan SQLite dan buat folder jika belum ada
     db_path = os.path.join(basedir, "database", "helios.db")
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
-    
-    with app.app_context():
-        folder_db = os.path.join(basedir, "database")
-        if not os.path.exists(folder_db):
-            os.makedirs(folder_db) # Ini aman karena di lokal bukan Read-Only
-        db.create_all()
 
 # Inisialisasi Database
 db.init_app(app)
