@@ -1,0 +1,61 @@
+{% macro timeline_item(exp, is_latest=False) %}
+<div class="relative pl-8 pb-12 group last:pb-0">
+    <!-- Vertical Line -->
+    <div
+        class="absolute left-[5.5px] top-2 w-[1px] h-full bg-gray-800 group-last:h-0"
+    ></div>
+
+    <!-- Timeline Dot -->
+    <div class="absolute left-0 top-2 w-2 h-2 flex items-center justify-center">
+        {% if is_latest %}
+        <!-- Lapisan Ping (Radar Effect) -->
+        <span
+            class="absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75 animate-ping"
+        ></span>
+
+        <!-- Lapisan Glow Tambahan (Static) -->
+        <span
+            class="absolute inline-flex h-4 w-4 rounded-full bg-teal-400/20 blur-[2px]"
+        ></span>
+        {% endif %}
+
+        <!-- Dot Utama (Tetap Solid) -->
+        <div
+            class="relative w-2 h-2 rounded-full bg-teal-400 z-10 
+            {{ 'shadow-[0_0_10px_rgba(45,212,191,0.8)]' if is_latest }}"
+        ></div>
+    </div>
+
+    <!-- Content -->
+    <div class="transition-all duration-300">
+        <h3 class="text-xl font-bold text-white tracking-tight">
+            {{ exp.title }}
+        </h3>
+
+        <div
+            class="flex flex-wrap items-center gap-2 mt-1 text-gray-400 text-sm font-medium"
+        >
+            <span class="text-white border-gray-700 pb-0.5"
+                >{{ exp.company }}</span
+            >
+            <span class="text-gray-600">•</span>
+            <span>{{ exp.location }}</span>
+            <span class="text-gray-600">•</span>
+            <span>{{ exp.work_type }}</span>
+        </div>
+
+        <p class="text-gray-500 text-sm mt-2">{{ exp.duration }}</p>
+
+        <ul class="mt-4 space-y-1">
+            {% for point in exp.description.split('|') %}
+            <li class="flex items-start gap-3 text-gray-400 leading-relaxed">
+                <span
+                    class="mt-2 w-1 h-1 rounded-full bg-gray-600 shrink-0"
+                ></span>
+                <span>{{ point }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endmacro %}

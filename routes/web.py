@@ -3,16 +3,16 @@ from jinja2 import TemplateNotFound
 import json
 
 # Import Model
-from model.models import NavItem, Social, Skill, Equipment
+from model.models import NavItem, Social, Skill, Equipment, Experience
 
 # Inisiasi pages blueprint dengan folder templates sebagai views
 pages = Blueprint("pages", __name__, template_folder="templates")
 
 ROUTE_MAPPINGS = {
     "/": "index.html",
-    "/resume": "resume.html",
-    "/articles": "articles.html",
-    "/projects": "project.html",
+    "/resume": "pages/resume.html",
+    "/articles": "pages/articles.html",
+    "/projects": "pages/project.html",
 }
 
 
@@ -65,14 +65,21 @@ def create_route_handler(template_path, endpoint_name):
 
     def handler():
         nav_item, socials, skills, equipment_data = get_common_data()
+
+        context = {
+            "nav_item": nav_item,
+            "socials": socials,
+            "skills": skills,
+            "equipment_data": equipment_data,
+        }
+
+        if endpoint_name == "resume":
+            context["experiences"] = Experience.query.order_by(
+                Experience.id.asc()
+            ).all()
+
         try:
-            return render_template(
-                template_path,
-                nav_item=nav_item,
-                socials=socials,
-                skills=skills,
-                equipment_data=equipment_data,
-            )
+            return render_template(template_path, **context)
         except TemplateNotFound:
             abort(404)
 

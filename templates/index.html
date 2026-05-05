@@ -7,7 +7,7 @@
 <!-- Equipments -->
 {% from "macros/equipments.html" import render_equipments %}
 <!-- Title -->
-{%block title%} Dian Wicaksono {%endblock%}
+{%block title%} Dian Wicaksono - About {%endblock%}
 
 <!-- Content -->
 {% block content %}
@@ -65,7 +65,7 @@
 {{ divider("Skills", "z-[11]") }}
 
 <!-- Section 2 -->
-<section class="space-y-4 md:py-6">
+<section class="py-6 space-y-4">
     <p class="text-base text-zinc-100 font-normal">
         The following is a curated selection of the frameworks, technologies,
         and runtimes that power my development workflow. This list is a dynamic
@@ -88,4 +88,4 @@
     {{ render_equipments(equipment_data) }}
 </section>
 <!--  -->
-{% endblock %} >>>>>>> dian
+{% endblock %}

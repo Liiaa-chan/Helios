@@ -1,0 +1,47 @@
+{% extends "base/base.html"%}
+
+<!-- Import Timeline -->
+{% from "macros/timeline.html" import timeline_item %}
+
+<!-- Import Components -->
+{% from "macros/divider.html" import divider %}
+
+<!-- Title -->
+{%block title%} Dian Wicaksono - Resume {%endblock%}
+
+<!-- Content -->
+{% block content %}
+
+<section class="py-6 space-y-4">
+    <h1 class="text-zinc-50 text-2xl font-medium md:text-3xl">
+        My Resume / CV
+    </h1>
+    <div class="space-y-2">
+        <p class="font-normal text-base text-zinc-200">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat,
+            aperiam. Quia accusantium dolor, cumque eos ab doloribus praesentium
+            numquam deleniti laudantium minus quos id hic quidem ullam,
+            similique, odio fugit voluptatem voluptatibus quam beatae veniam
+            aliquid quas corporis. Quo nulla, assumenda velit autem distinctio
+            officia. Nam veniam ducimus sunt! Doloribus.
+        </p>
+    </div>
+</section>
+
+{{ divider("Experience", "z-[11]") }}
+
+<section class="py-6 space-y-4">
+    <p class="text-base text-zinc-100 font-normal">
+        The following is a curated selection of the frameworks, technologies,
+        and runtimes that power my development workflow. This list is a dynamic
+        snapshot, because as a developer committed to lifelong learning, I am
+        constantly integrating new technical proficiencies and soft skills to
+        tackle complex challenges more effectively.
+    </p>
+
+    <div class="mt-8">
+        {% for exp in experiences %} {{ timeline_item(exp, loop.first) }} {%
+        endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -32,6 +32,16 @@ class Equipment(db.Model):
     # Menyimpan list sebagai string JSON
     data_list = db.Column(db.Text)
 
+
+class Experience(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100))
+    company = db.Column(db.String(100))
+    location = db.Column(db.String(100))
+    work_type = db.Column(db.String(50))
+    duration = db.Column(db.String(100))
+    description = db.Column(db.Text)
+
     @property
     def items(self):
         return json.loads(self.data_list) if self.data_list else []
