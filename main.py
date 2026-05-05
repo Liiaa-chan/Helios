@@ -29,18 +29,16 @@ migrate = Migrate(app, db)
 # Registrasi Blueprint
 app.register_blueprint(pages)
 
-if not os.environ.get("DATABASE_URL"):
+if not os.environ.get("DATABASE_URL") and not os.environ.get("POSTGRES_URL"):
     with app.app_context():
+        # Logika ini HANYA untuk lokal (Laptop Advan Anda)
         folder_db = os.path.join(basedir, "database")
         if not os.path.exists(folder_db):
             os.makedirs(folder_db)
-            print(f"Folder database dibuat di: {folder_db}")
-
-        try:
-            db.create_all()
-            print("Sistem Helios: Database & Tabel berhasil disiapkan!")
-        except Exception as e:
-            print(f"Gagal menyiapkan database: {e}")
+        db.create_all()
+        print("Lokal: SQLite siap.")
+else:
+    print("Server: Menggunakan Cloud Database.")
 
 if __name__ == "__main__":
     app.run(debug=True)
