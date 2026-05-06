@@ -17,3 +17,6 @@ yarn-error.log*
 database/
 *.db
 *.sqlite3
+
+# .env
+.env

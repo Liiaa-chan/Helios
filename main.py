@@ -1,70 +1,82 @@
 import os
 from flask import Flask
+from flask_admin import Admin
+from flask_login import LoginManager
 from routes.web import pages
-from model.models import db
+from model import db, Experience, Skill, Equipment, NavItem, User
 from flask_migrate import Migrate
+from config import Config, MyAdminView, ExperienceView, MyAdminIndexView
 
-app = Flask(__name__)
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+def create_app():
+    app = Flask(__name__)
 
-# 1. Konfigurasi Dasar
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    # 1. Load Konfigurasi dari Object
+    app.config.from_object(Config)
 
-# 2. Pengaturan URI Database
-db_url = (
-    os.environ.get("DATABASE_URL")
-    or os.environ.get("POSTGRES_URL")
-    or os.environ.get("POSTGRES_URL_POSTGRES_URL")
-    or os.environ.get("POSTGRES_URL_DATABASE_URL")
-)
+    # 2. Inisialisasi Extension
+    db.init_app(app)
+    Migrate(app, db)
 
-IS_VERCEL = os.environ.get("VERCEL") == "1"
+    # Setup Login Manager
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = "pages.login"
 
-if IS_VERCEL:
-    if db_url:
-        if db_url.startswith("postgres://"):
-            db_url = db_url.replace("postgres://", "postgresql://", 1)
-        app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
+
+    # Setup Flask-Admin
+    admin = Admin(app, name="Super Admin", index_view=MyAdminIndexView())
+    admin.template_mode = "bootstrap4"
+
+    # Daftarkan view menggunakan class yang diimpor dari config/admin_views.py
+    admin.add_view(ExperienceView(Experience, db))
+    admin.add_view(MyAdminView(Skill, db))
+    admin.add_view(MyAdminView(Equipment, db))
+    admin.add_view(MyAdminView(NavItem, db))
+
+    # 3. Registrasi Blueprint
+    app.register_blueprint(pages)
+
+    # 4. Setup Otomatis (Hanya Lokal)
+    if not Config.IS_VERCEL:
+        setup_local_database(app)
     else:
-        raise RuntimeError(
-            "DATABASE_URL tidak ditemukan di Environment Variables Vercel!"
-        )
-else:
-    db_path = os.path.join(basedir, "database", "helios.db")
-    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+        print("Sistem Helios: Berjalan di Server (Cloud DB).")
 
-# Inisialisasi Database
-db.init_app(app)
-migrate = Migrate(app, db)
+    return app
 
-# Registrasi Blueprint
-app.register_blueprint(pages)
 
-if not IS_VERCEL:
+def setup_local_database(app):
+    """Mengurus folder dan tabel SQLite saat di laptop Advan."""
     with app.app_context():
-        folder_db = os.path.join(basedir, "database")
-        if not os.path.exists(folder_db):
-            os.makedirs(folder_db)
-            print("Folder database lokal berhasil dibuat.")
+        db_dir = os.path.join(app.root_path, "database")
+        if not os.path.exists(db_dir):
+            os.makedirs(db_dir)
+            print("Folder database lokal dibuat.")
 
-        # Di lokal kita pakai create_all() agar praktis
         db.create_all()
+
+        user_env = app.config.get("ADMIN_USERNAME")
+        pass_env = app.config.get("ADMIN_PASSWORD")
+
+        if user_env and pass_env:
+            if not User.query.filter_by(username=user_env).first():
+                new_user = User(username=user_env)
+                new_user.set_password(pass_env)
+
+                db.session.add(new_user)
+                db.session.commit()
+                print(f"Sistem Helios: User '{user_env}' berhasil dibuat.")
+        else:
+            print("PERINGATAN: ADMIN_USERNAME atau ADMIN_PASSWORD di .env kosong!")
         print("Sistem Helios Lokal: Database & Tabel siap.")
-else:
-    # Di Vercel, kita tidak membuat folder atau db.create_all() secara otomatis
-    # Kita akan menggunakan Flask-Migrate via terminal atau dashboard
-    print("Sistem Helios Server: Menggunakan cloud database.")
 
 
-@app.route("/init-db")
-def init_db():
-    try:
-        db.create_all()
-        return "Database berhasil diinisialisasi! Semua tabel telah dibuat."
-    except Exception as e:
-        return f"Gagal membuat tabel: {str(e)}"
-
+# Inisiasi Aplikasi
+app = create_app()
 
 if __name__ == "__main__":
     app.run(debug=True)

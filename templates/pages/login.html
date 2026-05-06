@@ -1,0 +1,95 @@
+{% extends 'base/base.html' %}
+
+<!-- Title -->
+
+{% block title %}Login{%endblock%}
+
+<!-- Content -->
+
+{% block content %}
+<div class="min-h-[85vh] flex flex-col items-center justify-center px-4">
+    <div
+        class="w-full max-w-md p-8 bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 duration-500 mx-auto"
+    >
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-white tracking-tight">Login</h2>
+            <p class="text-zinc-400 mt-2 text-sm">
+                Silakan masuk untuk mengelola portofolio
+            </p>
+        </div>
+
+        <!-- Notifikasi Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div
+            class="mb-6 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {{ message }}
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <!-- Form Login -->
+        <form
+            action="{{ url_for('pages.login') }}"
+            method="POST"
+            class="space-y-6"
+        >
+            <!-- Username Field -->
+            <div>
+                <label
+                    class="block text-zinc-400 text-xs font-medium uppercase tracking-widest mb-2 ml-1"
+                >
+                    Username
+                </label>
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="admin"
+                    required
+                    class="w-full bg-zinc-900 border border-zinc-800 text-white px-4 py-3 focus:outline-none focus:border-teal-400 transition-all placeholder:text-zinc-600 shadow-inner"
+                />
+            </div>
+
+            <!-- Password Field -->
+            <div>
+                <label
+                    class="block text-zinc-400 text-xs font-medium uppercase tracking-widest mb-2 ml-1"
+                >
+                    Password
+                </label>
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="*******"
+                    required
+                    class="w-full bg-zinc-900 border border-zinc-800 text-white px-4 py-3 focus:outline-none focus:border-teal-400 transition-all placeholder:text-zinc-600 shadow-inner"
+                />
+            </div>
+
+            <!-- Submit Button -->
+            <button
+                type="submit"
+                class="w-full bg-teal-400 text-zinc-50 font-bold py-3.5 cursor-pointer mt-2 text-base"
+            >
+                Log In
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, abort
+from flask import Blueprint, render_template, abort, redirect, url_for, flash, request
+from flask_login import login_user, logout_user, login_required, current_user
+from model import User
 from jinja2 import TemplateNotFound
 import json
 
@@ -14,6 +16,34 @@ ROUTE_MAPPINGS = {
     "/articles": "pages/articles.html",
     "/projects": "pages/project.html",
 }
+
+
+@pages.route("/login", methods=["GET", "POST"])
+def login():
+    # Jika sudah login, jangan biarkan masuk ke halaman login lagi
+    if current_user.is_authenticated:
+        return redirect(url_for("admin.index"))
+
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.check_password(password):
+            login_user(user)
+            return redirect(url_for("admin.index"))
+
+        flash("Username atau password salah!", "error")
+
+    return render_template("pages/login.html")
+
+
+@pages.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("pages.login"))
 
 
 def get_common_data():
