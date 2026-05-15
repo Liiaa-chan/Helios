@@ -5,6 +5,13 @@ import json
 
 db = SQLAlchemy()
 
+# Tabel Bantuan (Association Table) untuk relasi Many-to-Many antara Article dan Skill
+article_skills = db.Table(
+    "article_skills",
+    db.Column("article_id", db.Integer, db.ForeignKey("articles.id"), primary_key=True),
+    db.Column("skill_id", db.Integer, db.ForeignKey("skills.id"), primary_key=True),
+)
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,3 +68,51 @@ class Experience(db.Model):
     @property
     def items(self):
         return json.loads(self.data_list) if self.data_list else []
+
+
+class Article(db.Model):
+    __tablename__ = "articles"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    # Kategori utama (masih berupa teks karena biasanya unik per artikel)
+    categories = db.Column(db.String(100), default="General")
+    date = db.Column(db.String(50))
+    image_url = db.Column(db.String(500))
+    content = db.Column(db.Text)  # Isi lengkap artikel (Markdown/HTML)
+
+    # RELASI MANY-TO-MANY ke Skill
+    # Sekarang kita tidak pakai string tech_stack, tapi berelasi langsung
+    skills = db.relationship(
+        "Skill",
+        secondary=article_skills,
+        backref=db.backref("articles", lazy="dynamic"),
+    )
+
+    def __repr__(self):
+        return f"<Article {self.title}>"
+
+    def get_category_list(self):
+        """Memecah string categories menjadi list untuk looping badge di template"""
+        if not self.categories:
+            return ["General"]
+        return [c.strip() for c in self.categories.split(",")]
+
+    def has_tech_category(self):
+        """Mengecek apakah artikel mengandung kategori teknologi untuk memunculkan tech stack"""
+        # Daftar kata kunci kategori yang dianggap sebagai konten teknis
+        tech_keywords = [
+            "Tech",
+            "Technology",
+            "Development",
+            "Software",
+            "Coding",
+            "Arduino",
+        ]
+        current_categories = self.get_category_list()
+
+        # Mengembalikan True jika ada salah satu kata kunci yang cocok (case-insensitive)
+        return any(
+            keyword.lower() in [c.lower() for c in current_categories]
+            for keyword in tech_keywords
+        )
