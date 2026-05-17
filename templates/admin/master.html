@@ -1,0 +1,169 @@
+{% extends 'admin/base.html' %} {% block head_css %}
+<!-- 1. Ganti Bootstrap standar bawaan Flask-Admin secara TOTAL dengan Cyborg CDN resmi -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cyborg/bootstrap.min.css"
+    rel="stylesheet"
+/>
+
+<!-- 2. Muat FontAwesome CDN agar ikon Edit (Pencil) dan Delete (Trash) muncul kembali secara global -->
+<link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    rel="stylesheet"
+/>
+
+<!-- 3. Muat CSS pembantu internal Flask-Admin agar tata letak icon, dropdown, dan sidebar tetap presisi -->
+<link
+    href="{{ admin_static.url(filename='admin/css/bootstrap4/admin.css', v='1.1.1') }}"
+    rel="stylesheet"
+/>
+
+<!-- 4. Sentuhan Aksen Teal Premium khas Helios agar serasi dengan website utama -->
+<style>
+    body {
+        background-color: #060606 !important; /* Latar belakang gelap pekat */
+    }
+    /* Menyesuaikan warna tombol primer dengan aksen teal */
+    .btn-primary,
+    .btn-success {
+        background-color: #14b8a6 !important;
+        border-color: #0d9488 !important;
+        color: #060606 !important;
+        font-weight: 600;
+    }
+    .btn-primary:hover,
+    .btn-success:hover {
+        background-color: #2dd4bf !important;
+        border-color: #14b8a6 !important;
+        color: #060606 !important;
+    }
+    /* Merapikan dropdown select2 bawaan */
+    .select2-container--default .select2-selection--multiple {
+        background-color: #18181b !important;
+        border: 1px solid #27272a !important;
+    }
+    /* =========================================================================
+           KUSTOMISASI IKON EDIT & DELETE (ORANGE & MERAH)
+           ========================================================================= */
+
+    /* 1. Ikon Edit (Pensil) berwarna Orange Primary */
+    .fa-pencil,
+    .fa-pencil-alt,
+    .fa-pen,
+    .fa-edit,
+    .fa-pencil-square-o {
+        color: #f97316 !important; /* Orange */
+        transition: color 0.2s ease-in-out;
+    }
+    .fa-pencil:hover,
+    .fa-pencil-alt:hover,
+    .fa-pen:hover,
+    .fa-edit:hover {
+        color: #fdba74 !important; /* Orange yang lebih terang saat di-hover */
+    }
+
+    /* 2. Ikon Delete (Tong Sampah) berwarna Merah */
+    .fa-trash,
+    .fa-trash-alt,
+    .fa-trash-can {
+        color: #ef4444 !important; /* Red */
+        transition: color 0.2s ease-in-out;
+    }
+    .fa-trash:hover,
+    .fa-trash-alt:hover,
+    .fa-trash-can:hover {
+        color: #fca5a5 !important; /* Merah yang lebih terang saat di-hover */
+    }
+
+    /* 3. Penyelarasan Tag Anchor Link Aksi Bawaan Flask-Admin */
+    .list-buttons-column a[title*="Edit"],
+    .list-buttons-column a[title*="edit"] {
+        color: #f97316 !important;
+        text-decoration: none !important;
+    }
+    .list-buttons-column a[title*="Edit"]:hover,
+    .list-buttons-column a[title*="edit"]:hover {
+        color: #fdba74 !important;
+    }
+
+    .list-buttons-column a[title*="Delete"],
+    .list-buttons-column a[title*="delete"],
+    .list-buttons-column form button.icon {
+        color: #ef4444 !important;
+        text-decoration: none !important;
+    }
+    .list-buttons-column a[title*="Delete"]:hover,
+    .list-buttons-column a[title*="delete"]:hover,
+    .list-buttons-column form button.icon:hover {
+        color: #fca5a5 !important;
+    }
+
+    /* =========================================================================
+           KUSTOMISASI ELEMEN FORMULIR UNTUK DUKUNGAN DARK MODE (CYBORG STYLE)
+           ========================================================================= */
+
+    /* Pewarnaan seluruh komponen input, textarea, dan select */
+    .form-control,
+    input[type="text"],
+    input[type="password"],
+    input[type="datetime"],
+    input[type="datetime-local"],
+    input[type="date"],
+    input[type="month"],
+    input[type="time"],
+    input[type="week"],
+    input[type="number"],
+    input[type="email"],
+    input[type="url"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="color"],
+    select,
+    textarea {
+        background-color: #121214 !important; /* Abu-abu gelap pekat */
+        border: 1px solid #27272a !important; /* Border zinc-800 */
+        color: #f4f4f5 !important; /* Teks zinc-100 */
+        border-radius: 6px !important;
+        transition:
+            border-color 0.15s ease-in-out,
+            box-shadow 0.15s ease-in-out,
+            background-color 0.15s ease-in-out;
+    }
+
+    /* Efek fokus input premium dengan glow warna teal */
+    .form-control:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+        background-color: #18181b !important; /* Sedikit lebih terang saat aktif */
+        color: #ffffff !important;
+        border-color: #14b8a6 !important; /* Teal border pada fokus */
+        box-shadow: 0 0 0 0.2rem rgba(20, 184, 166, 0.15) !important; /* Efek pendaran teal */
+        outline: 0;
+    }
+
+    /* Penyelarasan label agar memiliki kontras tinggi pada background hitam */
+    .control-label,
+    label,
+    .form-group label {
+        color: #a1a1aa !important; /* Label berwarna zinc-400 */
+        font-weight: 500 !important;
+        letter-spacing: 0.025em;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Mencegah drop-down options berubah putih di beberapa tipe browser */
+    select option {
+        background-color: #18181b !important;
+        color: #f4f4f5 !important;
+    }
+
+    /* Memperbaiki visual input yang dinonaktifkan (read-only/disabled) */
+    .form-control:disabled,
+    .form-control[readonly] {
+        background-color: #09090b !important;
+        color: #71717a !important; /* zinc-500 */
+        border-color: #18181b !important;
+        opacity: 0.8;
+    }
+</style>
+{% endblock %}
