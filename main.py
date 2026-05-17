@@ -60,7 +60,7 @@ def create_app():
 
     # Setup Flask-Admin Dashboard
     admin = Admin(app, name="Super Admin", index_view=MyAdminIndexView())
-    admin.template_mode = "bootstrap3"
+    admin.template_mode = "bootstrap4"
 
     # Registrasi Semua Halaman Manajemen Admin secara Konsisten menggunakan db.session
     admin.add_view(ExperienceView(Experience, db.session, name="Manage Experience"))
