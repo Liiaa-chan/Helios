@@ -42,7 +42,7 @@ def create_app():
     app.config["IS_VERCEL"] = is_vercel
 
     # Tema gelap premium untuk panel Flask-Admin
-    app.config["FLASK_ADMIN_SWATCH"] = "cerulean"
+    app.config["FLASK_ADMIN_SWATCH"] = "cyborg"
 
     # 2. Inisialisasi Extension Database & Migrasi
     db.init_app(app)
