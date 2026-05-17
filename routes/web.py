@@ -5,7 +5,7 @@ from jinja2 import TemplateNotFound
 import json
 
 # Import Model
-from model.models import NavItem, Social, Skill, Equipment, Experience
+from model.models import NavItem, Social, Skill, Equipment, Experience, Article, Project
 
 # Inisiasi pages blueprint dengan folder templates sebagai views
 pages = Blueprint("pages", __name__, template_folder="templates")
@@ -36,7 +36,7 @@ def login():
 
         flash("Username atau password salah!", "error")
 
-    return render_template("pages/login.html")
+    return render_template("admin/login.html")
 
 
 @pages.route("/logout")
@@ -103,10 +103,17 @@ def create_route_handler(template_path, endpoint_name):
             "equipment_data": equipment_data,
         }
 
+        # Kondisi 1: Mengambil data untuk halaman Resume
         if endpoint_name == "resume":
             context["experiences"] = Experience.query.order_by(
                 Experience.id.asc()
             ).all()
+
+        if endpoint_name == "articles":
+            context["articles"] = Article.query.order_by(Article.id.desc()).all()
+
+        if endpoint_name == "projects":
+            context["projects"] = Project.query.order_by(Project.id.desc()).all()
 
         try:
             return render_template(template_path, **context)
@@ -127,3 +134,39 @@ for route_path, template_path in ROUTE_MAPPINGS.items():
         endpoint=endpoint_name,  # Gunakan endpoint unik
         view_func=create_route_handler(template_path, endpoint_name),
     )
+
+
+# Routes Khusus untuk articles id.
+@pages.route("/articles/<string:slug>")
+def article_detail(slug):
+    """Handler menggunakan slug untuk rute detail yang ramah SEO"""
+    nav_item, socials, skills, equipment_data = get_common_data()
+
+    # Mencari data artikel berdasarkan kolom slug di database
+    article = Article.query.filter_by(slug=slug).first_or_404()
+
+    context = {
+        "nav_item": nav_item,
+        "socials": socials,
+        "skills": skills,
+        "equipment_data": equipment_data,
+        "item": article,  # Tetap dikirim sebagai 'item' agar Canvas mengenalnya
+        "back_url": url_for("pages.articles"),
+    }
+    return render_template("pages/detail_wrapper.html", **context)
+
+
+@pages.route("/projects/<string:slug>")
+def project_detail(slug):
+    """Handler Canvas Kosong untuk Detail Project menggunakan Slug"""
+    nav_item, socials, skills, equipment_data = get_common_data()
+    project = Project.query.filter_by(slug=slug).first_or_404()
+    context = {
+        "nav_item": nav_item,
+        "socials": socials,
+        "skills": skills,
+        "equipment_data": equipment_data,
+        "item": project,
+        "back_url": url_for("pages.projects"),
+    }
+    return render_template("pages/detail_wrapper.html", **context)

@@ -26,6 +26,12 @@
             href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
         />
 
+        <!-- 1. Tema Gelap Premium untuk Highlight.js -->
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+        />
+
         <!-- Data AoS (Optional) -->
     </head>
     <body class="bg-zinc-950 min-h-screen flex flex-col items-center">
@@ -43,5 +49,7 @@
         {% include "includes/_footer.html" %}
         <!-- Javascript -->
         <script src="{{url_for('static', filename='js/script.js')}}"></script>
+        <!-- 2. Pustaka Utama Highlight.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     </body>
 </html>

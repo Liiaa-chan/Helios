@@ -79,3 +79,96 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", handleResize);
     handleResize(); // Inisialisasi awal
 });
+
+function initCodeHighlighter() {
+    // =========================================================================
+    // A. ENGINE KOMPATIBILITAS: Konversi Format Quill 2.0 ke Standard Pre Tag
+    // =========================================================================
+    const quill2Containers = document.querySelectorAll(
+        ".ql-code-block-container",
+    );
+
+    quill2Containers.forEach(function (container) {
+        // Cari semua baris kode bertipe ql-code-block
+        const lines = container.querySelectorAll(".ql-code-block");
+        let codeText = "";
+
+        lines.forEach(function (line, index) {
+            // Satukan teks dengan enters (\n)
+            codeText +=
+                line.textContent + (index < lines.length - 1 ? "\n" : "");
+        });
+
+        // Fallback jika baris tidak ditemukan
+        if (lines.length === 0) {
+            codeText = container.textContent.trim();
+        }
+
+        // Buat elemen pre standard pengganti
+        const preElement = document.createElement("pre");
+        preElement.className = "ql-syntax";
+        preElement.textContent = codeText;
+
+        // Ganti kontainer lama milik Quill 2.0 dengan pre standard buatan kita
+        container.parentNode.replaceChild(preElement, container);
+    });
+
+    // =========================================================================
+    // B. PEWARNAAN SINTAKSIS & GENERATOR TOMBOL COPY
+    // =========================================================================
+    const codeBlocks = document.querySelectorAll("pre.ql-syntax");
+
+    codeBlocks.forEach(function (block) {
+        // Mencegah duplikasi inisialisasi jika fungsi terpanggil dua kali
+        if (block.classList.contains("hljs-initialized")) return;
+        block.classList.add("hljs-initialized");
+
+        // Ambil teks murni sebelum tombol disisipkan
+        const codeText = block.textContent.trim();
+
+        // 1. Jalankan pewarnaan sintaksis menggunakan Highlight.js
+        hljs.highlightElement(block);
+
+        // 2. Buat elemen tombol Copy secara dinamis
+        const button = document.createElement("button");
+        button.className = "btn-copy-code";
+        button.type = "button";
+        button.innerText = "Copy";
+
+        // Masukkan tombol ke dalam blok kode
+        block.appendChild(button);
+
+        // 3. Fungsi Event Listener Klik untuk Menyalin
+        button.addEventListener("click", function () {
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = codeText;
+            tempTextArea.style.position = "fixed";
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+
+            try {
+                const successful = document.execCommand("copy");
+                if (successful) {
+                    button.innerText = "Copied!";
+                    button.style.color = "#2dd4bf"; // Ubah warna teks jadi teal
+
+                    setTimeout(function () {
+                        button.innerText = "Copy";
+                        button.style.color = "";
+                    }, 2000);
+                }
+            } catch (err) {
+                button.innerText = "Failed";
+            }
+
+            document.body.removeChild(tempTextArea);
+        });
+    });
+}
+
+// Eksekusi instan jika DOM sudah selesai dimuat untuk mengantisipasi keterlambatan CDN
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCodeHighlighter);
+} else {
+    initCodeHighlighter();
+}
