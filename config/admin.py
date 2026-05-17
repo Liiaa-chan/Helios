@@ -11,8 +11,14 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 UPLOAD_PATH = os.path.join(PROJECT_ROOT, "static", "uploads")
-os.makedirs(UPLOAD_PATH, exist_ok=True)
 
+try:
+    os.makedirs(UPLOAD_PATH, exist_ok=True)
+    print("Folder upload berhasil diverifikasi/dibuat.")
+except OSError:
+    # Jika berjalan di Vercel yang read-only, lewati saja agar tidak crash
+    print("Berjalan di lingkungan Read-Only (Vercel). Pembuatan folder dilewati.")
+    pass
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
