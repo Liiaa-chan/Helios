@@ -1,0 +1,80 @@
+{% extends "base/base.html" %} {% block title %} Dian Wicaksono - {{ item.title
+}} {% endblock %} {% block content %}
+<article class="py-6 space-y-8 max-w-4xl mx-auto">
+    <div class="space-y-4">
+        <div class="flex flex-wrap gap-2">
+            {% if item.get_category_list %} {# Melakukan perulangan badge
+            kategori berdasarkan relasi model #} {% for cat in
+            item.get_category_list() %}
+            <span
+                class="bg-teal-500/10 text-teal-400 border border-teal-500/20 px-3 py-1 text-xs font-bold uppercase"
+            >
+                {{ cat }}
+            </span>
+            {% endfor %} {% else %} {# Fallback jika tidak ada kategori
+            terdaftar #}
+            <span
+                class="bg-teal-500/10 text-teal-400 border border-teal-500/20 px-3 py-1 text-xs font-bold uppercase"
+            >
+                Technical Project
+            </span>
+            {% endif %}
+        </div>
+
+        <h1
+            class="text-3xl font-bold tracking-tight text-zinc-50 md:text-4xl leading-tight"
+        >
+            {{ item.title }}
+        </h1>
+
+        <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-b border-zinc-900"
+        >
+            <time class="text-sm text-zinc-500 font-medium uppercase gap-1.5">
+                {{ item.date }}
+            </time>
+
+            {% if item.skills %}
+            <div
+                class="flex items-center gap-3 bg-zinc-900/40 px-3 py-1.5 border border-zinc-900"
+            >
+                <span class="text-xs text-zinc-500 font-bold uppercase mr-1"
+                    >Tech Stack:</span
+                >
+                {% for skill in item.skills %}
+                <i
+                    class="{{ skill.icon }} colored text-base"
+                    title="{{ skill.name }}"
+                ></i>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if item.image_url %}
+    <div
+        class="border border-zinc-800 bg-zinc-900 overflow-hidden aspect-video w-full"
+    >
+        {# Mengecek apakah gambar menggunakan link luar seeder atau unggahan
+        lokal secara aman #} {% if item.image_url and
+        item.image_url.startswith('http') %}
+        <img
+            src="{{ item.image_url }}"
+            alt="{{ item.title }}"
+            class="w-full h-full object-cover"
+        />
+        {% elif item.image_url %}
+        <img
+            src="{{ url_for('static', filename=item.image_url) }}"
+            alt="{{ item.title }}"
+            class="w-full h-full object-cover"
+        />
+        {% endif %}
+    </div>
+    {% endif %} {# Konten Rich Text dari Quill JS #}
+    <div class="text-base text-zinc-300 leading-relaxed space-y-2 font-normal">
+        {{ item.content | safe }}
+    </div>
+</article>
+{% endblock %}

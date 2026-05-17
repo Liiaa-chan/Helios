@@ -3,9 +3,27 @@ from flask import Flask
 from flask_admin import Admin
 from flask_login import LoginManager
 from routes.web import pages
-from model import db, Experience, Skill, Equipment, NavItem, User
+from model import (
+    db,
+    Experience,
+    Skill,
+    Equipment,
+    NavItem,
+    User,
+    Article,
+    Project,
+    Category,
+)
 from flask_migrate import Migrate
-from config import Config, MyAdminView, ExperienceView, MyAdminIndexView
+from config import (
+    Config,
+    MyAdminView,
+    ExperienceView,
+    MyAdminIndexView,
+    ArticleAdminView,
+    ProjectAdminView,
+    CategoryAdminView,
+)
 
 
 def create_app():
@@ -13,6 +31,8 @@ def create_app():
 
     # 1. Load Konfigurasi dari Object
     app.config.from_object(Config)
+    # Admin dark theme
+    app.config["FLASK_ADMIN_SWATCH"] = "cerulean"
 
     # 2. Inisialisasi Extension
     db.init_app(app)
@@ -36,7 +56,25 @@ def create_app():
     admin.add_view(MyAdminView(Skill, db))
     admin.add_view(MyAdminView(Equipment, db))
     admin.add_view(MyAdminView(NavItem, db))
-
+    admin.add_view(
+        ArticleAdminView(Article, db, name="Manage Articles", category="Content")
+    )
+    admin.add_view(
+        ProjectAdminView(
+            Project,
+            db.session,
+            name="Manage Projects",
+            category="Content",
+        )
+    )
+    admin.add_view(
+        CategoryAdminView(
+            Category,
+            db.session,
+            name="Manage Categories",
+            category="Content",  # Disatukan dalam kelompok dropdown menu "Content" yang sama
+        )
+    )
     # 3. Registrasi Blueprint
     app.register_blueprint(pages)
 
