@@ -13,6 +13,7 @@ from model import (
     Article,
     Project,
     Category,
+    CV,
 )
 from flask_migrate import Migrate
 from config import (
@@ -23,6 +24,7 @@ from config import (
     ArticleAdminView,
     ProjectAdminView,
     CategoryAdminView,
+    CVAdminView,
 )
 
 # Integrasi otomatis pembacaan file .env untuk fleksibilitas lokal
@@ -67,6 +69,7 @@ def create_app():
     admin.add_view(MyAdminView(Skill, db.session, name="Manage Skills"))
     admin.add_view(MyAdminView(Equipment, db.session, name="Manage Equipment"))
     admin.add_view(MyAdminView(NavItem, db.session, name="Manage Navigation"))
+    admin.add_view(CVAdminView(CV, db.session, name="Manage CV", category="Content"))
 
     admin.add_view(
         ArticleAdminView(

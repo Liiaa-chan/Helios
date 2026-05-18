@@ -5,7 +5,16 @@ from jinja2 import TemplateNotFound
 import json
 
 # Import Model
-from model.models import NavItem, Social, Skill, Equipment, Experience, Article, Project
+from model.models import (
+    NavItem,
+    Social,
+    Skill,
+    Equipment,
+    Experience,
+    Article,
+    Project,
+    CV,
+)
 
 # Inisiasi pages blueprint dengan folder templates sebagai views
 pages = Blueprint("pages", __name__, template_folder="templates")
@@ -36,14 +45,14 @@ def login():
 
         flash("Username atau password salah!", "error")
 
-    return render_template("admin/login.html")
+    return render_template("auth/login.html")
 
 
 @pages.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("pages.login"))
+    return redirect(url_for("auth/login.html"))
 
 
 def get_common_data():
@@ -108,6 +117,7 @@ def create_route_handler(template_path, endpoint_name):
             context["experiences"] = Experience.query.order_by(
                 Experience.id.asc()
             ).all()
+            context["active_cv"] = CV.query.filter_by(is_active=True).first()
 
         if endpoint_name == "articles":
             context["articles"] = Article.query.order_by(Article.id.desc()).all()

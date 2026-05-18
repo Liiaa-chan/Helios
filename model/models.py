@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import re
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -264,3 +265,17 @@ class Project(db.Model):
     def generate_slug(self):
         clean_title = self.title.lower()
         self.slug = re.sub(r"[^a-z0-9]+", "-", clean_title).strip("-")
+
+
+class CV(db.Model):
+    __tablename__ = "cv"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    file_name = db.Column(db.String(255), nullable=True)
+    external_link = db.Column(db.Text, nullable=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f"<CV {self.title}>"
