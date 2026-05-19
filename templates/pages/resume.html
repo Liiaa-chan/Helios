@@ -23,19 +23,11 @@
             architectures, writing clean code, and streamlining deployments via
             CI/CD pipelines. Passionate about solving complex logic from local
             environment to cloud production. Explore {% if active_cv %}
-            <a
-                href="{% if active_cv.external_link %}{{ active_cv.external_link }}{% else %}{{ url_for('static', filename='/' + active_cv.file_name) }}{% endif %}"
-                {%
-                if
-                active_cv.external_link
-                %}
-                {%
-                endif
-                %}
-                class="text-white underline underline-offset-4 decoration-teal-400 decoration-2"
-                target="_blank"
-                >my attached CV</a
-            >
+                <a 
+                    href="{% if active_cv.external_link %}{{ active_cv.external_link }}{% elif active_cv.file_name %}{% if active_cv.file_name.startswith('http') %}{{ active_cv.file_name }}{% else %}{{ url_for('static', filename='/' + active_cv.file_name) }}{% endif %}{% else %}#{% endif %}" 
+                    {% if active_cv.external_link or (active_cv.file_name and active_cv.file_name.startswith('http')) %} target="_blank" {% endif %} 
+                    class="text-white underline underline-offset-4 decoration-teal-400 decoration-2 hover:text-teal-300 transition-colors"
+                >my attached CV</a>
             {% endif %} for a deeper dive into my journey.
         </p>
     </div>
