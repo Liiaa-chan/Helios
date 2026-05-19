@@ -61,7 +61,7 @@ def create_app():
         return User.query.get(int(user_id))
 
     # Setup Flask-Admin Dashboard
-    admin = Admin(app, name="Super Admin", index_view=MyAdminIndexView(base_template="admin/master.html"))
+    admin = Admin(app, name="Super Admin", index_view=MyAdminIndexView())
     admin.template_mode = "bootstrap4"
 
     # Registrasi Semua Halaman Manajemen Admin secara Konsisten menggunakan db.session
