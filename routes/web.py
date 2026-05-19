@@ -8,6 +8,7 @@ from flask import (
     request,
     jsonify,
 )
+import os
 from flask_login import login_user, logout_user, login_required, current_user
 from model import User
 from jinja2 import TemplateNotFound
@@ -27,19 +28,40 @@ from model.models import (
     CV,
 )
 
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
 
 # Inisiasi pages blueprint dengan folder templates sebagai views
 pages = Blueprint("pages", __name__, template_folder="templates")
 
 # Konfigurasi manual fallback jika deteksi otomatis bawaan SDK sempat terlewat
-if os.environ.get("CLOUDINARY_URL"):
-    cloudinary.config()
+cloudinary_url = os.environ.get("CLOUDINARY_URL")
+
+if cloudinary_url:
+    # Bersihkan karakter pembungkus jika ada
+    cloudinary_url = cloudinary_url.strip().strip('"').strip("'")
+    
+    try:
+        if cloudinary_url.startswith("cloudinary://"):
+            # Bongkar otomatis format URL secara asinkron di memori RAM
+            url_clean = cloudinary_url.replace("cloudinary://", "")
+            credentials, cloud_name = url_clean.split("@")
+            api_key, api_secret = credentials.split(":")
+            
+            cloudinary.config(
+                cloud_name=cloud_name.strip(),
+                api_key=api_key.strip(),
+                api_secret=api_secret.strip(),
+                secure=True
+            )
+            print("✅ CLOUDINARY CONFIG: Berhasil terhubung dengan aman via Environment!")
+        else:
+            cloudinary.config()
+    except Exception as parse_error:
+        print(f"❌ Gagal mem-parsing CLOUDINARY_URL: {parse_error}")
+        cloudinary.config()
 else:
-    print("⚠️ PERINGATAN CRITICAL: CLOUDINARY_URL tidak ditemukan di .env!")
+    # Jika dijalankan via python main.py biasa dan env belum terisi
+    print("⚠️ CLOUDINARY CONFIG: Menggunakan konfigurasi default SDK.")
+    cloudinary.config()
 
 ROUTE_MAPPINGS = {
     "/": "index.html",
