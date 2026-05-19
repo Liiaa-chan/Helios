@@ -187,12 +187,15 @@ def project_detail(slug):
 @pages.route("/api/upload", methods=["POST"])
 def api_upload():
     """Endpoint ringkas menerima file dari FilePond dan meneruskannya ke Cloudinary"""
+    # Pastikan request memiliki data file
+    if not request.files:
+        print("❌ CRASH API: Request.files kosong! FilePond tidak mengirimkan file berkas.")
+        return jsonify({"error": "Tidak ada file yang dikirim oleh FilePond"}), 400
+
     file_key = next(iter(request.files), None)
-    
-    if not file_key:
-        return jsonify({"error": "Tidak ada file yang ditemukan"}), 400
-        
     uploaded_file = request.files[file_key]
+    
+    print(f"📦 API DETECTED: Mencoba mengunggah file '{uploaded_file.filename}' ke Cloudinary...")
     
     try:
         # Alirkan langsung dari memori RAM ke server awan Cloudinary
@@ -202,8 +205,20 @@ def api_upload():
             resource_type="auto"
         )
         
+        secure_url = upload_result.get("secure_url")
+        print(f"✅ UPLOAD SUCCESS: File berhasil di-host di Cloudinary -> {secure_url}")
+        
         # Kirim balik URL HTTPS permanen ke FilePond frontend
-        return upload_result.get("secure_url"), 200
+        return secure_url, 200
         
     except Exception as e:
+        # =========================================================================
+        # CETAK ERROR SEBENARNYA KE TERMINAL (Biang Kerok Asli Akan Muncul di Sini!)
+        # =========================================================================
+        print("\n" + "!" * 60)
+        print(f"❌ ERROR PADA /api/upload: {str(e)}")
+        import traceback
+        traceback.print_exc() # Mencetak runtutan baris kode yang menyebabkan crash
+        print("!" * 60 + "\n")
+        
         return jsonify({"error": str(e)}), 500
