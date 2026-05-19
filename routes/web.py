@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, abort, redirect, url_for, flash, request
+from flask import Blueprint, render_template, abort, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from model import User
 from jinja2 import TemplateNotFound
 import json
+import cloudinary
+import cloudinary.uploader
 
 # Import Model
 from model.models import (
@@ -180,3 +182,28 @@ def project_detail(slug):
         "back_url": url_for("pages.projects"),
     }
     return render_template("pages/detail_wrapper.html", **context)
+
+
+@pages.route("/api/upload", methods=["POST"])
+def api_upload():
+    """Endpoint ringkas menerima file dari FilePond dan meneruskannya ke Cloudinary"""
+    file_key = next(iter(request.files), None)
+    
+    if not file_key:
+        return jsonify({"error": "Tidak ada file yang ditemukan"}), 400
+        
+    uploaded_file = request.files[file_key]
+    
+    try:
+        # Alirkan langsung dari memori RAM ke server awan Cloudinary
+        upload_result = cloudinary.uploader.upload(
+            uploaded_file,
+            folder="helios_portfolio",
+            resource_type="auto"
+        )
+        
+        # Kirim balik URL HTTPS permanen ke FilePond frontend
+        return upload_result.get("secure_url"), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

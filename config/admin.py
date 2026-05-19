@@ -2,7 +2,7 @@ from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from flask import redirect, url_for
-from wtforms import TextAreaField, DateField, SelectField
+from wtforms import TextAreaField, DateField, SelectField,StringField
 from flask_admin.form import ImageUploadField
 from flask_admin.form import FileUploadField
 from model.models import Category
@@ -79,6 +79,7 @@ class ArticleAdminView(MyAdminView):
         "date": DateField,
         "description": TextAreaField,
         "content": TextAreaField,
+        "image_url": StringField,
     }
 
     form_extra_fields = {
@@ -146,6 +147,7 @@ class ProjectAdminView(MyAdminView):
         "date": DateField,
         "description": TextAreaField,
         "content": TextAreaField,
+        "image_url": StringField, 
     }
 
     form_extra_fields = {
@@ -252,6 +254,11 @@ class CVAdminView(MyAdminView):
         )
     }
 
+    # Menjadikan file_name sebagai StringField biasa agar menampung tautan aman Cloudinary
+    form_overrides = {
+        "file_name": StringField,
+    }
+    
     column_labels = {
         "title": "Nama / Label CV",
         "file_name": "Berkas CV (PDF/DOCX)",

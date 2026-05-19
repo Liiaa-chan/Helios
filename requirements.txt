@@ -19,3 +19,4 @@ SQLAlchemy==2.0.49
 typing_extensions==4.15.0
 Werkzeug==3.0.4
 WTForms==3.2.2
+cloudinary==1.44.2
