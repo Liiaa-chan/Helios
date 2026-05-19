@@ -1,14 +1,12 @@
+import os
+from flask import redirect, url_for
 from flask_admin import AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
-from flask import redirect, url_for
-from wtforms import TextAreaField, DateField, SelectField,StringField
-from flask_admin.form import ImageUploadField
-from flask_admin.form import FileUploadField
+from wtforms import TextAreaField, DateField, SelectField, StringField # Ditukar sepenuhnya ke StringField
 from model.models import Category
-import os
 
-# Tempat penyimpanan data gambar
+# Tempat penyimpanan data gambar fisik (try-except aman untuk Read-Only Vercel)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 UPLOAD_PATH = os.path.join(PROJECT_ROOT, "static")
@@ -17,7 +15,6 @@ try:
     os.makedirs(UPLOAD_PATH, exist_ok=True)
     print("Folder upload berhasil diverifikasi/dibuat.")
 except OSError:
-    # Jika berjalan di Vercel yang read-only, lewati saja agar tidak crash
     print("Berjalan di lingkungan Read-Only (Vercel). Pembuatan folder dilewati.")
     pass
 
@@ -39,6 +36,9 @@ class MyAdminView(ModelView):
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for("pages.login"))
+
+    # Menambahkan CSS gelap secara global di kelas induk utama
+    extra_css = ["/static/css/admin_dark.css"]
 
 
 class ExperienceView(MyAdminView):
@@ -79,23 +79,18 @@ class ArticleAdminView(MyAdminView):
         "date": DateField,
         "description": TextAreaField,
         "content": TextAreaField,
-        "image_url": StringField,
+        "image_url": StringField, # Menyimpan URL teks CDN Cloudinary dari FilePond
     }
 
-    form_extra_fields = {
-        "image_url": ImageUploadField(
-            "Hero Image",
-            base_path=UPLOAD_PATH,
-            relative_path="uploads/",
-            allowed_extensions=["jpg", "jpeg", "png", "gif", "webp"],
-        )
-    }
+    # FIX 1: Kosongkan form_extra_fields agar tidak memicu deteksi unggahan lokal PIL/Pillow
+    form_extra_fields = {}
 
+    # FIX 2: Menghapus .all() agar WTForms menerima objek Query yang valid untuk pemetaan relasi
     form_args = {
         "categories": {
             "query_factory": lambda: Category.query.filter_by(
                 kode_kategori="article"
-            ).all()
+            )
         }
     }
 
@@ -109,11 +104,14 @@ class ArticleAdminView(MyAdminView):
         "skills",
     ]
 
-    form_label_modifiers = {
+    # FIX 3: Menggunakan 'column_labels' bawaan agar label terjemahan form ter-render sempurna
+    column_labels = {
         "date": "Tanggal Rilis Artikel",
+        "title": "Judul Artikel",
+        "description": "Deskripsi Singkat",
         "categories": "Pilih Kategori Artikel",
         "skills": "Tech Stack (Skills Related)",
-        "image_url": "Upload Hero Image",
+        "image_url": "Upload Hero Image (via FilePond Cloud)",
         "content": "Main Content (Quill JS Rich Editor Enabled)",
     }
 
@@ -147,23 +145,18 @@ class ProjectAdminView(MyAdminView):
         "date": DateField,
         "description": TextAreaField,
         "content": TextAreaField,
-        "image_url": StringField, 
+        "image_url": StringField, # Menyimpan URL teks CDN Cloudinary dari FilePond
     }
 
-    form_extra_fields = {
-        "image_url": ImageUploadField(
-            "Image Project",
-            base_path=UPLOAD_PATH,
-            relative_path="uploads/",
-            allowed_extensions=["jpg", "jpeg", "png", "gif", "webp"],
-        )
-    }
+    # FIX 1: Kosongkan form_extra_fields agar tidak memicu deteksi unggahan lokal PIL/Pillow
+    form_extra_fields = {}
 
+    # FIX 2: Menghapus .all() agar WTForms menerima objek Query yang valid untuk pemetaan relasi
     form_args = {
         "categories": {
             "query_factory": lambda: Category.query.filter_by(
                 kode_kategori="project"
-            ).all()
+            )
         }
     }
 
@@ -179,9 +172,13 @@ class ProjectAdminView(MyAdminView):
         "skills",
     ]
 
-    form_label_modifiers = {
+    # FIX 3: Menggunakan 'column_labels' bawaan agar label terjemahan form ter-render sempurna
+    column_labels = {
         "date": "Tanggal Penyelesaian Proyek",
+        "title": "Judul Proyek",
+        "description": "Deskripsi Proyek",
         "categories": "Pilih Kategori Proyek",
+        "image_url": "Image Project (via FilePond Cloud)",
         "github_link": "GitHub Repository URL",
         "demo_link": "Live Demo / Production URL",
         "skills": "Technologies Used (Tech Stack)",
@@ -216,8 +213,8 @@ class CategoryAdminView(MyAdminView):
     # Kolom yang muncul di form tambah/edit
     form_columns = ["name", "kode_kategori"]
 
-    # Merapikan label text pada form dashboard
-    form_label_modifiers = {
+    # FIX: Menggunakan 'column_labels' bawaan agar label terjemahan form ter-render sempurna
+    column_labels = {
         "name": "Nama Kategori (e.g. Internet of Things, Reflections)",
         "kode_kategori": "Peruntukan Kategori / Tipe Data",
     }
@@ -242,26 +239,21 @@ class CVAdminView(MyAdminView):
     extra_js = [
         "https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js",
         "https://unpkg.com/filepond/dist/filepond.js",
-        "/static/js/admin_custom.js",  # <-- Memanggil script inisialisasi
+        "/static/js/admin_custom.js",  # <-- Memanggil script inisialisasi kustom
     ]
 
-    form_extra_fields = {
-        "file_name": FileUploadField(
-            "Upload Berkas CV (Lokal)",
-            base_path=UPLOAD_PATH,
-            relative_path="uploads/",
-            allowed_extensions=["pdf", "doc", "docx"],
-        )
-    }
+    # FIX 1: Kosongkan form_extra_fields karena file_name sekarang berinteraksi dengan API Cloudinary asinkron
+    form_extra_fields = {}
 
     # Menjadikan file_name sebagai StringField biasa agar menampung tautan aman Cloudinary
     form_overrides = {
         "file_name": StringField,
     }
     
+    # FIX: Menyelaraskan ke properti 'column_labels' standar Flask-Admin
     column_labels = {
         "title": "Nama / Label CV",
-        "file_name": "Berkas CV (PDF/DOCX)",
+        "file_name": "Upload Berkas CV PDF/DOCX (via FilePond Cloud)",
         "external_link": "Tautan Cloud Permanen (Alternatif Vercel)",
         "is_active": "Aktifkan CV Ini di Frontend",
         "uploaded_at": "Tanggal Unggah",
