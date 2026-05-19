@@ -27,8 +27,18 @@ from model.models import (
     CV,
 )
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Inisiasi pages blueprint dengan folder templates sebagai views
 pages = Blueprint("pages", __name__, template_folder="templates")
+
+# Konfigurasi manual fallback jika deteksi otomatis bawaan SDK sempat terlewat
+if os.environ.get("CLOUDINARY_URL"):
+    cloudinary.config()
+else:
+    print("⚠️ PERINGATAN CRITICAL: CLOUDINARY_URL tidak ditemukan di .env!")
 
 ROUTE_MAPPINGS = {
     "/": "index.html",
