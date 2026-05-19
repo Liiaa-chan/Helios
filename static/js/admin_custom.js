@@ -1,16 +1,118 @@
 /**
- * HELIOS ADMIN CUSTOM SCRIPT - INTEGRATED PRODUCTION VERSION
- * Mengintegrasikan Quill JS, FilePond (Cloudinary Cloud Upload), 
- * Custom Select2 (Ikon Devicon), dan Flatpickr secara aman dengan Flask-Admin.
+ * HELIOS ADMIN CUSTOM SCRIPT - FULL FEATURED PRODUCTION VERSION
+ * Mengintegrasikan Quill JS (Full Toolbar + Cloudinary Image Handler), 
+ * FilePond (Cloudinary Shadow Input), Custom Select2 (Ikon Devicon), 
+ * dan Flatpickr secara aman dengan Flask-Admin.
  */
 
 document.addEventListener("DOMContentLoaded", function () {
     
     // =========================================================================
-    // 1. INTEGRASI PREMIUM FILEPOND (METODE SHADOW INPUT UNTUK CLOUDINARY)
+    // 1. INTEGRASI PREMIUM QUILL JS (FULL TOOLBAR + CLOUD IMAGE INTERCEPTOR)
+    // =========================================================================
+    const textareaContent = document.getElementById("content");
+
+    if (textareaContent) {
+        // Sembunyikan textarea asli agar tidak merusak visual halaman
+        textareaContent.style.display = "none";
+
+        // Buat kontainer div baru untuk Quill JS secara dinamis
+        const quillContainer = document.createElement("div");
+        quillContainer.id = "quill-editor";
+        quillContainer.style.height = "450px"; // Dimensi lega untuk penulisan artikel panjang
+        quillContainer.style.backgroundColor = "#121214"; 
+        quillContainer.style.color = "#ffffff"; 
+        quillContainer.className = "rounded-b-lg border border-zinc-800";
+
+        // Sisipkan div editor tepat di atas textarea lama
+        textareaContent.parentNode.insertBefore(quillContainer, textareaContent);
+
+        // Ambil konten lama dari database (jika sedang mengedit data)
+        quillContainer.innerHTML = textareaContent.value;
+
+        // DAFTAR PENGATURAN TOOLBAR LENGKAP (Highlighter, Font, Media & Format)
+        const fullToolbarOptions = [
+            [{ 'header': [1, 2, 3, 4, false] }],
+            [{ 'font': [] }, { 'size': [] }],
+            ["bold", "italic", "underline", "strike"],        
+            [{ 'color': [] }, { 'background': [] }],          // <--- HIGHLIGHTER KALIMAT (Background & Text Color)
+            [{ 'script': 'sub'}, { 'script': 'super' }],      
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
+            [{ 'direction': 'rtl' }, { 'align': [] }],        
+            ["link", "image", "video", "blockquote", "code-block"], // <--- MEDIA INTEGRATION
+            ["clean"]                                         
+        ];
+
+        // Inisialisasi Quill JS
+        const quill = new Quill("#quill-editor", {
+            theme: "snow",
+            modules: {
+                toolbar: fullToolbarOptions
+            },
+        });
+
+        // =====================================================================
+        // KUSTOM HANDLER: Cegah Penyimpanan Base64 & Alirkan Gambar ke Cloudinary
+        // =====================================================================
+        const toolbar = quill.getModule('toolbar');
+        toolbar.addHandler('image', function() {
+            const fileInput = document.createElement('input');
+            fileInput.setAttribute('type', 'file');
+            fileInput.setAttribute('accept', 'image/*');
+            fileInput.click();
+
+            fileInput.onchange = () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('file', file); // Menggunakan payload form upload
+
+                    // Ubah kursor menjadi loading/wait
+                    quill.root.style.cursor = 'wait';
+
+                    // Alirkan langsung ke endpoint API /api/upload
+                    fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(url => {
+                        if (url && url.startsWith('http')) {
+                            // Ambil letak kursor aktif di editor
+                            const range = quill.getSelection();
+                            // Masukkan URL HTTPS permanen dari Cloudinary sebagai tag <img>
+                            quill.insertEmbed(range.index, 'image', url);
+                        } else {
+                            console.error('Unggahan gagal atau balikan URL tidak sesuai.');
+                        }
+                    })
+                    .catch(err => console.error('Quill Cloudinary Upload Error:', err))
+                    .finally(() => {
+                        // Kembalikan kursor ke bentuk semula
+                        quill.root.style.cursor = 'auto';
+                    });
+                }
+            };
+        });
+
+        // SINKRONISASI 1: Sinkronkan setiap perubahan teks ke textarea asli secara real-time
+        quill.on("text-change", function () {
+            textareaContent.value = quill.root.innerHTML;
+        });
+
+        // SINKRONISASI 2: Jaminan akhir saat form dikirim (submit) agar data tidak kosong
+        const form = textareaContent.closest("form");
+        if (form) {
+            form.addEventListener("submit", function () {
+                textareaContent.value = quill.root.innerHTML;
+            });
+        }
+    }
+
+    // =========================================================================
+    // 2. INTEGRASI PREMIUM FILEPOND (METODE SHADOW INPUT UNTUK CLOUDINARY)
     // =========================================================================
     if (typeof FilePond !== "undefined") {
-        // Daftarkan plugin pratinjau gambar FilePond jika tersedia
         if (typeof FilePondPluginImagePreview !== "undefined") {
             FilePond.registerPlugin(FilePondPluginImagePreview);
         }
@@ -78,57 +180,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 textInput.value = "";
             });
         });
-    }
-
-    // =========================================================================
-    // 2. INTEGRASI PREMIUM QUILL JS RICH TEXT EDITOR
-    // =========================================================================
-    const textareaContent = document.getElementById("content");
-
-    if (textareaContent) {
-        // Sembunyikan textarea asli agar tidak mengganggu visual form
-        textareaContent.style.display = "none";
-
-        // Buat kontainer div baru untuk Quill JS secara dinamis
-        const quillContainer = document.createElement("div");
-        quillContainer.id = "quill-editor";
-        quillContainer.style.height = "350px";
-        quillContainer.style.backgroundColor = "#121214"; // Warna abu gelap premium
-        quillContainer.style.color = "#ffffff"; // Teks putih agar nyaman dibaca di mode gelap
-        quillContainer.className = "rounded-b-lg border border-zinc-800";
-
-        // Sisipkan div editor tepat di atas textarea lama
-        textareaContent.parentNode.insertBefore(quillContainer, textareaContent);
-
-        // Ambil konten lama dari database (jika sedang mengedit data)
-        quillContainer.innerHTML = textareaContent.value;
-
-        // Inisialisasi Quill JS
-        const quill = new Quill("#quill-editor", {
-            theme: "snow",
-            modules: {
-                toolbar: [
-                    [{ header: [1, 2, 3, false] }],
-                    ["bold", "italic", "underline", "strike"],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    ["link", "blockquote", "code-block"],
-                    ["clean"],
-                ],
-            },
-        });
-
-        // SINKRONISASI 1: Sinkronkan setiap perubahan teks ke textarea asli secara real-time
-        quill.on("text-change", function () {
-            textareaContent.value = quill.root.innerHTML;
-        });
-
-        // SINKRONISASI 2: Jaminan akhir saat form disubmit agar data aman
-        const form = textareaContent.closest("form");
-        if (form) {
-            form.addEventListener("submit", function () {
-                textareaContent.value = quill.root.innerHTML;
-            });
-        }
     }
 
     // =========================================================================
