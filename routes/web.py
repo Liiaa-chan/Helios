@@ -1,4 +1,13 @@
-from flask import Blueprint, render_template, abort, redirect, url_for, flash, request, jsonify
+from flask import (
+    Blueprint,
+    render_template,
+    abort,
+    redirect,
+    url_for,
+    flash,
+    request,
+    jsonify,
+)
 from flask_login import login_user, logout_user, login_required, current_user
 from model import User
 from jinja2 import TemplateNotFound
@@ -54,7 +63,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("auth/login.html"))
+    return redirect(url_for("pages.login"))
 
 
 def get_common_data():
@@ -186,39 +195,39 @@ def project_detail(slug):
 
 @pages.route("/api/upload", methods=["POST"])
 def api_upload():
-    """Endpoint ringkas menerima file dari FilePond dan meneruskannya ke Cloudinary"""
-    # Pastikan request memiliki data file
+    """Endpoint menerima berkas dari FilePond dan meneruskannya ke Cloudinary"""
     if not request.files:
-        print("❌ CRASH API: Request.files kosong! FilePond tidak mengirimkan file berkas.")
-        return jsonify({"error": "Tidak ada file yang dikirim oleh FilePond"}), 400
-
+        print(
+            "❌ CRASH API: Request.files kosong! FilePond tidak mengirimkan komponen file berkas."
+        )
+        return jsonify({"error": "Tidak ada berkas yang diterima oleh server"}), 400
     file_key = next(iter(request.files), None)
     uploaded_file = request.files[file_key]
-    
-    print(f"📦 API DETECTED: Mencoba mengunggah file '{uploaded_file.filename}' ke Cloudinary...")
-    
+
+    if not uploaded_file or uploaded_file.filename == "":
+        print("❌ CRASH API: Nama file kosong atau tidak valid.")
+        return jsonify({"error": "Berkas tidak valid"}), 400
+
+    print(
+        f"📦 API DETECTED: Mencoba mengalirkan '{uploaded_file.filename}' langsung ke Cloudinary..."
+    )
+
     try:
-        # Alirkan langsung dari memori RAM ke server awan Cloudinary
         upload_result = cloudinary.uploader.upload(
             uploaded_file,
             folder="helios_portfolio",
-            resource_type="auto"
+            resource_type="auto",
         )
-        
         secure_url = upload_result.get("secure_url")
-        print(f"✅ UPLOAD SUCCESS: File berhasil di-host di Cloudinary -> {secure_url}")
-        
-        # Kirim balik URL HTTPS permanen ke FilePond frontend
+        print(f"✅ UPLOAD SUCCESS: Berkas sukses menetap di Cloudinary -> {secure_url}")
         return secure_url, 200
-        
+
     except Exception as e:
-        # =========================================================================
-        # CETAK ERROR SEBENARNYA KE TERMINAL (Biang Kerok Asli Akan Muncul di Sini!)
-        # =========================================================================
         print("\n" + "!" * 60)
-        print(f"❌ ERROR PADA /api/upload: {str(e)}")
+        print(f"❌ DETEKSI ERROR PADA /api/upload: {str(e)}")
         import traceback
-        traceback.print_exc() # Mencetak runtutan baris kode yang menyebabkan crash
+
+        traceback.print_exc()
         print("!" * 60 + "\n")
-        
-        return jsonify({"error": str(e)}), 500
+
+        return jsonify({"error": f"Cloudinary Upload Failed: {str(e)}"}), 500

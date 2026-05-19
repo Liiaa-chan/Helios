@@ -63,12 +63,14 @@
             src="{{ item.image_url }}"
             alt="{{ item.title }}"
             class="w-full h-full object-cover"
+            loading="lazy"
         />
         {% elif item.image_url %}
         <img
             src="{{ url_for('static', filename=item.image_url) }}"
             alt="{{ item.title }}"
             class="w-full h-full object-cover"
+            loading="lazy"
         />
         {% endif %}
     </div>

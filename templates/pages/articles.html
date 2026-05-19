@@ -38,11 +38,31 @@
                 class="relative border border-zinc-800 bg-zinc-900 overflow-hidden"
             >
                 <div class="aspect-video relative bg-zinc-800">
+                    {% if article.image_url and
+                    article.image_url.startswith('http') %}
+                    <!-- Jika menggunakan URL penuh dari Cloudinary -->
                     <img
                         src="{{ article.image_url }}"
                         alt="{{ article.title }}"
                         class="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 transition-all duration-500"
+                        loading="lazy"
                     />
+                    {% elif article.image_url %}
+                    <!-- Jika menggunakan aset lokal lama -->
+                    <img
+                        src="{{ url_for('static', filename='uploads/' + article.image_url.replace('uploads/', '')) }}"
+                        alt="{{ article.title }}"
+                        class="w-full h-full object-cover grayscale-[40%] group-hover:grayscale-0 transition-all duration-500"
+                        loading="lazy"
+                    />
+                    {% else %}
+                    <!-- Placeholder jika tidak ada gambar sama sekali -->
+                    <div
+                        class="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-600 font-mono text-xs uppercase tracking-widest"
+                    >
+                        No Image Registered
+                    </div>
+                    {% endif %}
 
                     <div class="absolute top-0 right-0 flex gap-[1px]">
                         {% for cat in article.get_category_list() %}
