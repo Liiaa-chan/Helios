@@ -9,14 +9,17 @@ from flask import (
     jsonify,
 )
 import os
-from flask_login import login_user, logout_user, login_required, current_user
-from model import User
-from jinja2 import TemplateNotFound
 import json
+import traceback
+
+from flask_login import login_user, logout_user, login_required, current_user
+from jinja2 import TemplateNotFound
+
 import cloudinary
 import cloudinary.uploader
 
 # Import Model
+from model import User
 from model.models import (
     NavItem,
     Social,
@@ -29,39 +32,16 @@ from model.models import (
 )
 
 
-# Inisiasi pages blueprint dengan folder templates sebagai views
+# ---------------------------------------------------------------------------
+# Blueprint Setup
+# ---------------------------------------------------------------------------
+
 pages = Blueprint("pages", __name__, template_folder="templates")
 
-# Konfigurasi manual fallback jika deteksi otomatis bawaan SDK sempat terlewat
-cloudinary_url = os.environ.get("CLOUDINARY_URL")
 
-if cloudinary_url:
-    # Bersihkan karakter pembungkus jika ada
-    cloudinary_url = cloudinary_url.strip().strip('"').strip("'")
-    
-    try:
-        if cloudinary_url.startswith("cloudinary://"):
-            # Bongkar otomatis format URL secara asinkron di memori RAM
-            url_clean = cloudinary_url.replace("cloudinary://", "")
-            credentials, cloud_name = url_clean.split("@")
-            api_key, api_secret = credentials.split(":")
-            
-            cloudinary.config(
-                cloud_name=cloud_name.strip(),
-                api_key=api_key.strip(),
-                api_secret=api_secret.strip(),
-                secure=True
-            )
-            print("✅ CLOUDINARY CONFIG: Berhasil terhubung dengan aman via Environment!")
-        else:
-            cloudinary.config()
-    except Exception as parse_error:
-        print(f"❌ Gagal mem-parsing CLOUDINARY_URL: {parse_error}")
-        cloudinary.config()
-else:
-    # Jika dijalankan via python main.py biasa dan env belum terisi
-    print("⚠️ CLOUDINARY CONFIG: Menggunakan konfigurasi default SDK.")
-    cloudinary.config()
+# ---------------------------------------------------------------------------
+# Route Mappings
+# ---------------------------------------------------------------------------
 
 ROUTE_MAPPINGS = {
     "/": "index.html",
@@ -71,9 +51,54 @@ ROUTE_MAPPINGS = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Helper: Konfigurasi Cloudinary
+# Dipisah menjadi fungsi sendiri agar bisa dipanggil ulang setiap request.
+# Di serverless environment (Vercel, AWS Lambda), state modul bisa di-reset
+# antar invokasi, sehingga config top-level tidak bisa diandalkan.
+# ---------------------------------------------------------------------------
+
+def configure_cloudinary():
+    """
+    Membaca CLOUDINARY_URL dari environment dan mengonfigurasi SDK.
+    Mengembalikan True jika berhasil, False jika gagal.
+    """
+    cloudinary_url = os.environ.get("CLOUDINARY_URL", "").strip().strip('"').strip("'")
+
+    if not cloudinary_url:
+        print("❌ CLOUDINARY: Environment variable CLOUDINARY_URL tidak ditemukan.")
+        return False
+
+    if not cloudinary_url.startswith("cloudinary://"):
+        print(f"❌ CLOUDINARY: Format URL tidak valid → '{cloudinary_url}'")
+        return False
+
+    try:
+        url_clean = cloudinary_url.replace("cloudinary://", "")
+        credentials, cloud_name = url_clean.split("@")
+        api_key, api_secret = credentials.split(":")
+
+        cloudinary.config(
+            cloud_name=cloud_name.strip(),
+            api_key=api_key.strip(),
+            api_secret=api_secret.strip(),
+            secure=True,
+        )
+        print("✅ CLOUDINARY: Konfigurasi berhasil.")
+        return True
+
+    except Exception as e:
+        print(f"❌ CLOUDINARY: Gagal mem-parsing URL → {e}")
+        return False
+
+
+# ---------------------------------------------------------------------------
+# Auth Routes
+# ---------------------------------------------------------------------------
+
 @pages.route("/login", methods=["GET", "POST"])
 def login():
-    # Jika sudah login, jangan biarkan masuk ke halaman login lagi
+    # Jika sudah login, redirect ke halaman admin
     if current_user.is_authenticated:
         return redirect(url_for("admin.index"))
 
@@ -99,19 +124,21 @@ def logout():
     return redirect(url_for("pages.login"))
 
 
+# ---------------------------------------------------------------------------
+# Helper: Data Umum Semua Halaman
+# ---------------------------------------------------------------------------
+
 def get_common_data():
-    """Fungsi pembantu untuk mengambil data dasar yang dibutuhkan semua halaman."""
+    """Mengambil data dasar yang dibutuhkan oleh semua halaman (navbar, footer, dll)."""
     nav_items = NavItem.query.all()
     socials = Social.query.all()
     skills = Skill.query.all()
 
-    # Mengambil dan memproses data Equipment
     equipment_db = Equipment.query.all()
     software_list = []
     hardware_list = []
 
     for eq in equipment_db:
-        # Mengubah kembali string JSON dari database menjadi list Python
         details = json.loads(eq.data_list) if eq.data_list else []
 
         if eq.type == "software":
@@ -126,25 +153,30 @@ def get_common_data():
     return nav_items, socials, skills, equipment_data
 
 
-# Error halaman
+# ---------------------------------------------------------------------------
+# Error Handler
+# ---------------------------------------------------------------------------
+
 @pages.app_errorhandler(404)
 def page_not_found(e):
-    # Mengembalikan template custom 404 dengan status code 404
     nav_item, socials, skills, _ = get_common_data()
     return (
         render_template(
             "errors/404.html",
             nav_item=nav_item,
             socials=socials,
-            skills=skills,  # Pastikan data global tetap dikirim agar navbar/footer tidak pecah
+            skills=skills,
         ),
         404,
     )
 
 
-# Routes Handler
+# ---------------------------------------------------------------------------
+# Dynamic Route Handler
+# ---------------------------------------------------------------------------
+
 def create_route_handler(template_path, endpoint_name):
-    """Creates route handler with unique endpoint"""
+    """Membuat handler rute secara dinamis dengan endpoint unik per rute."""
 
     def handler():
         nav_item, socials, skills, equipment_data = get_common_data()
@@ -156,11 +188,8 @@ def create_route_handler(template_path, endpoint_name):
             "equipment_data": equipment_data,
         }
 
-        # Kondisi 1: Mengambil data untuk halaman Resume
         if endpoint_name == "resume":
-            context["experiences"] = Experience.query.order_by(
-                Experience.id.desc()
-            ).all()
+            context["experiences"] = Experience.query.order_by(Experience.id.desc()).all()
             context["active_cv"] = CV.query.filter_by(is_active=True).first()
 
         if endpoint_name == "articles":
@@ -178,25 +207,25 @@ def create_route_handler(template_path, endpoint_name):
     return handler
 
 
-# Register routes with UNIQUE endpoints
+# Register semua rute dari ROUTE_MAPPINGS secara dinamis
 for route_path, template_path in ROUTE_MAPPINGS.items():
-    # Generate unique endpoint name from route path
     endpoint_name = route_path.strip("/").replace("/", "_") or "index"
 
     pages.add_url_rule(
         route_path,
-        endpoint=endpoint_name,  # Gunakan endpoint unik
+        endpoint=endpoint_name,
         view_func=create_route_handler(template_path, endpoint_name),
     )
 
 
-# Routes Khusus untuk articles id.
+# ---------------------------------------------------------------------------
+# Detail Routes (SEO-friendly slug)
+# ---------------------------------------------------------------------------
+
 @pages.route("/articles/<string:slug>")
 def article_detail(slug):
-    """Handler menggunakan slug untuk rute detail yang ramah SEO"""
+    """Menampilkan detail artikel berdasarkan slug."""
     nav_item, socials, skills, equipment_data = get_common_data()
-
-    # Mencari data artikel berdasarkan kolom slug di database
     article = Article.query.filter_by(slug=slug).first_or_404()
 
     context = {
@@ -204,7 +233,7 @@ def article_detail(slug):
         "socials": socials,
         "skills": skills,
         "equipment_data": equipment_data,
-        "item": article,  # Tetap dikirim sebagai 'item' agar Canvas mengenalnya
+        "item": article,
         "back_url": url_for("pages.articles"),
     }
     return render_template("pages/detail_wrapper.html", **context)
@@ -212,9 +241,10 @@ def article_detail(slug):
 
 @pages.route("/projects/<string:slug>")
 def project_detail(slug):
-    """Handler Canvas Kosong untuk Detail Project menggunakan Slug"""
+    """Menampilkan detail project berdasarkan slug."""
     nav_item, socials, skills, equipment_data = get_common_data()
     project = Project.query.filter_by(slug=slug).first_or_404()
+
     context = {
         "nav_item": nav_item,
         "socials": socials,
@@ -226,25 +256,40 @@ def project_detail(slug):
     return render_template("pages/detail_wrapper.html", **context)
 
 
+# ---------------------------------------------------------------------------
+# API Upload (Cloudinary via FilePond)
+# ---------------------------------------------------------------------------
+
 @pages.route("/api/upload", methods=["POST"])
 def api_upload():
-    """Endpoint menerima berkas dari FilePond dan meneruskannya ke Cloudinary"""
+    """
+    Menerima file dari FilePond dan meneruskannya ke Cloudinary.
+
+    Cloudinary dikonfigurasi ulang di sini (bukan di level modul) karena
+    di serverless environment, state antar-invokasi tidak dijamin persisten.
+    """
+
+    # Step 1: Pastikan Cloudinary terkonfigurasi dengan benar sebelum upload
+    if not configure_cloudinary():
+        return jsonify({
+            "error": "Konfigurasi Cloudinary gagal. Pastikan CLOUDINARY_URL sudah diset di environment."
+        }), 500
+
+    # Step 2: Validasi keberadaan file dalam request
     if not request.files:
-        print(
-            "❌ CRASH API: Request.files kosong! FilePond tidak mengirimkan komponen file berkas."
-        )
-        return jsonify({"error": "Tidak ada berkas yang diterima oleh server"}), 400
+        print("❌ API UPLOAD: request.files kosong, FilePond tidak mengirim file.")
+        return jsonify({"error": "Tidak ada berkas yang diterima oleh server."}), 400
+
     file_key = next(iter(request.files), None)
     uploaded_file = request.files[file_key]
 
     if not uploaded_file or uploaded_file.filename == "":
-        print("❌ CRASH API: Nama file kosong atau tidak valid.")
-        return jsonify({"error": "Berkas tidak valid"}), 400
+        print("❌ API UPLOAD: Nama file kosong atau tidak valid.")
+        return jsonify({"error": "Berkas tidak valid."}), 400
 
-    print(
-        f"📦 API DETECTED: Mencoba mengalirkan '{uploaded_file.filename}' langsung ke Cloudinary..."
-    )
+    print(f"📦 API UPLOAD: Mengalirkan '{uploaded_file.filename}' ke Cloudinary...")
 
+    # Step 3: Lakukan upload ke Cloudinary
     try:
         upload_result = cloudinary.uploader.upload(
             uploaded_file,
@@ -252,15 +297,10 @@ def api_upload():
             resource_type="auto",
         )
         secure_url = upload_result.get("secure_url")
-        print(f"✅ UPLOAD SUCCESS: Berkas sukses menetap di Cloudinary -> {secure_url}")
+        print(f"✅ UPLOAD SUCCESS: {secure_url}")
         return secure_url, 200
 
     except Exception as e:
-        print("\n" + "!" * 60)
-        print(f"❌ DETEKSI ERROR PADA /api/upload: {str(e)}")
-        import traceback
-
+        print(f"❌ CLOUDINARY UPLOAD FAILED: {str(e)}")
         traceback.print_exc()
-        print("!" * 60 + "\n")
-
         return jsonify({"error": f"Cloudinary Upload Failed: {str(e)}"}), 500
