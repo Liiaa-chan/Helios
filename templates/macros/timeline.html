@@ -2,7 +2,7 @@
 <div class="relative pl-8 pb-12 group last:pb-0">
     <!-- Vertical Line -->
     <div
-        class="absolute left-[5.5px] top-2 w-[1px] h-full bg-gray-800 group-last:h-0"
+        class="absolute left-[3.8px] top-2 w-[1px] h-full bg-zinc-800 group-last:h-0"
     ></div>
 
     <!-- Timeline Dot -->
@@ -33,26 +33,26 @@
         </h3>
 
         <div
-            class="flex flex-wrap items-center gap-2 mt-1 text-gray-400 text-sm font-medium"
+            class="flex flex-wrap items-center gap-2 mt-1 text-zinc-400 text-sm font-medium"
         >
-            <span class="text-white border-gray-700 pb-0.5"
+            <span class="text-white border-zinc-700 pb-0.5"
                 >{{ exp.company }}</span
             >
-            <span class="text-gray-600">•</span>
-            <span>{{ exp.location }}</span>
-            <span class="text-gray-600">•</span>
-            <span>{{ exp.work_type }}</span>
+            <span class="text-zinc-100">•</span>
+            <span class="text-zinc-300">{{ exp.location }}</span>
+            <span class="text-zinc-100">•</span>
+            <span class="text-zinc-300">{{ exp.work_type }}</span>
         </div>
 
-        <p class="text-gray-500 text-sm mt-2">{{ exp.duration }}</p>
+        <p class="text-zinc-500 text-sm mt-2">{{ exp.duration }}</p>
 
         <ul class="mt-4 space-y-1">
             {% for point in exp.description.split('|') %}
-            <li class="flex items-start gap-3 text-gray-400 leading-relaxed">
+            <li class="flex items-start gap-3 text-zinc-400 leading-relaxed">
                 <span
-                    class="mt-2 w-1 h-1 rounded-full bg-gray-600 shrink-0"
+                    class="mt-2 w-1 h-1 rounded-full bg-zinc-500 shrink-0"
                 ></span>
-                <span>{{ point }}</span>
+                <span class="text-zinc-300">{{ point }}</span>
             </li>
             {% endfor %}
         </ul>

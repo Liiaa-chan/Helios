@@ -16,12 +16,11 @@
     <h1 class="text-zinc-50 text-2xl font-medium md:text-3xl">Coffee Break</h1>
     <div class="space-y-2">
         <p class="font-normal text-base text-zinc-200">
-            Menulis kode terkadang lebih melelahkan daripada menuliskan
-            perjalanan hidup dan pengalaman. Section kali ini kita akan
-            beristirahat dari program yang berat dan beralih ke tulisan dengan
-            gaya bahasa ringan dan komprehensif. Saya berharap kita bisa saling
-            bertukar pikiran dengan saling berdiskusi di berbagai aspek. Enjoy
-            😊
+            Writing code can sometimes be more exhausting than chronicling life
+            journeys and experiences. In this section, let’s take a
+            well-deserved break from heavy programming and pivot toward a
+            lighter, more comprehensive narrative. I look forward to exchanging
+            thoughts and sharing ideas across various perspectives. Enjoy! 😊
         </p>
     </div>
 </section>
@@ -29,7 +28,7 @@
 {{ divider("Latest Post", "z-[11]") }}
 
 <section class="space-y-6">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-8 py-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-6 py-4">
         {% for article in articles %}
         <a
             href="{{ url_for('pages.article_detail', slug=article.slug) }}"

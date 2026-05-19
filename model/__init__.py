@@ -9,4 +9,5 @@ from .models import (
     Article,
     Project,
     Category,
+    CV,
 )

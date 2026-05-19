@@ -176,3 +176,24 @@ function formatSkillOption(state) {
 
     return state.text;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    // 1. Daftarkan plugin pratinjau gambar (otomatis dilewati jika filenya adalah PDF)
+    if (typeof FilePondPluginImagePreview !== "undefined") {
+        FilePond.registerPlugin(FilePondPluginImagePreview);
+    }
+
+    // 2. Cari semua elemen input file di halaman admin secara otomatis
+    const fileInputs = document.querySelectorAll('input[type="file"]');
+
+    fileInputs.forEach((input) => {
+        // Inisialisasi FilePond untuk setiap input file yang ditemukan
+        FilePond.create(input, {
+            labelIdle:
+                'Seret & lepas berkas di sini atau <span class="filepond--label-action">Telusuri</span>',
+            allowMultiple: false,
+            instantUpload: false, // Biarkan form Flask-Admin yang mengurus submit datanya
+            credits: false, // Menghapus watermark bertenaga FilePond di pojok bawah
+        });
+    });
+});

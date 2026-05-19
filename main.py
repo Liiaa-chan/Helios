@@ -13,6 +13,7 @@ from model import (
     Article,
     Project,
     Category,
+    CV,
 )
 from flask_migrate import Migrate
 from config import (
@@ -23,10 +24,12 @@ from config import (
     ArticleAdminView,
     ProjectAdminView,
     CategoryAdminView,
+    CVAdminView,
 )
 
 # Integrasi otomatis pembacaan file .env untuk fleksibilitas lokal
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -35,7 +38,7 @@ def create_app():
 
     # 1. Load Konfigurasi dari Object (Membaca Environment Variables dari .env lokal atau Vercel)
     app.config.from_object(Config)
-    
+
     # Deteksi lingkungan secara dinamis
     # Vercel secara otomatis menyuntikkan env VERCEL=1 ke dalam serverless container
     is_vercel = os.environ.get("VERCEL") == "1" or app.config.get("IS_VERCEL", False)
@@ -66,9 +69,12 @@ def create_app():
     admin.add_view(MyAdminView(Skill, db.session, name="Manage Skills"))
     admin.add_view(MyAdminView(Equipment, db.session, name="Manage Equipment"))
     admin.add_view(MyAdminView(NavItem, db.session, name="Manage Navigation"))
-    
+    admin.add_view(CVAdminView(CV, db.session, name="Manage CV", category="Content"))
+
     admin.add_view(
-        ArticleAdminView(Article, db.session, name="Manage Articles", category="Content")
+        ArticleAdminView(
+            Article, db.session, name="Manage Articles", category="Content"
+        )
     )
     admin.add_view(
         ProjectAdminView(
@@ -86,7 +92,7 @@ def create_app():
             category="Content",
         )
     )
-    
+
     # 3. Registrasi Blueprint Rute Pengunjung
     app.register_blueprint(pages)
 
@@ -98,14 +104,14 @@ def create_app():
 
 def setup_database_schema(app):
     """
-    Mengurus pembuatan folder (jika lokal), verifikasi tabel, 
+    Mengurus pembuatan folder (jika lokal), verifikasi tabel,
     dan pembuatan user admin otomatis menggunakan kredensial dari Env Vercel/Lokal.
     """
     with app.app_context():
         is_vercel = app.config.get("IS_VERCEL", False)
-        
+
         # Tampilkan status booting sistem Helios di terminal
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         if is_vercel:
             print("🪐 SISTEM HELIOS: BERJALAN DI SERVER CLOUD (VERCEL)")
             # Sensor URI database untuk keamanan log Vercel
@@ -115,7 +121,7 @@ def setup_database_schema(app):
         else:
             print("💻 SISTEM HELIOS: BERJALAN DI LINGKUNGAN LOKAL")
             print("🔗 Database: SQLite (database/helios.db)")
-        print("="*60)
+        print("=" * 60)
 
         # A. Pengondisian Folder Database Lokal (Hanya berjalan di luar Vercel untuk menghindari Read-Only Crash)
         if not is_vercel:
@@ -142,7 +148,7 @@ def setup_database_schema(app):
             try:
                 # Cari apakah user tersebut sudah terdaftar di database cloud / lokal
                 existing_user = User.query.filter_by(username=user_env).first()
-                
+
                 if not existing_user:
                     # Jika user belum ada, buat baru dan lakukan hashing password secara aman
                     new_user = User(username=user_env)
@@ -150,15 +156,21 @@ def setup_database_schema(app):
 
                     db.session.add(new_user)
                     db.session.commit()
-                    print(f"👤 Akun admin '{user_env}' sukses dibuat dan disimpan ke database!")
+                    print(
+                        f"👤 Akun admin '{user_env}' sukses dibuat dan disimpan ke database!"
+                    )
                 else:
-                    print(f"ℹ️ Akun admin '{user_env}' sudah terdaftar di database. Pembuatan dilewati.")
+                    print(
+                        f"ℹ️ Akun admin '{user_env}' sudah terdaftar di database. Pembuatan dilewati."
+                    )
             except Exception as e:
                 print(f"⚠️ Gagal memverifikasi / menyimpan user admin: {e}")
         else:
-            print("⚠️ PERINGATAN: ADMIN_USERNAME atau ADMIN_PASSWORD di environment masih kosong!")
-        
-        print("="*60 + "\n")
+            print(
+                "⚠️ PERINGATAN: ADMIN_USERNAME atau ADMIN_PASSWORD di environment masih kosong!"
+            )
+
+        print("=" * 60 + "\n")
 
 
 # Inisiasi Aplikasi WSGI Flask utama untuk Vercel

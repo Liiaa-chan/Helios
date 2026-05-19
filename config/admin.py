@@ -4,13 +4,14 @@ from flask_login import current_user
 from flask import redirect, url_for
 from wtforms import TextAreaField, DateField, SelectField
 from flask_admin.form import ImageUploadField
+from flask_admin.form import FileUploadField
 from model.models import Category
 import os
 
 # Tempat penyimpanan data gambar
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
-UPLOAD_PATH = os.path.join(PROJECT_ROOT, "static", "uploads")
+UPLOAD_PATH = os.path.join(PROJECT_ROOT, "static")
 
 try:
     os.makedirs(UPLOAD_PATH, exist_ok=True)
@@ -19,6 +20,7 @@ except OSError:
     # Jika berjalan di Vercel yang read-only, lewati saja agar tidak crash
     print("Berjalan di lingkungan Read-Only (Vercel). Pembuatan folder dilewati.")
     pass
+
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
@@ -216,4 +218,44 @@ class CategoryAdminView(MyAdminView):
     form_label_modifiers = {
         "name": "Nama Kategori (e.g. Internet of Things, Reflections)",
         "kode_kategori": "Peruntukan Kategori / Tipe Data",
+    }
+
+
+class CVAdminView(MyAdminView):
+    """Konfigurasi panel kontrol untuk mengelola berkas CV Resume dengan FilePond"""
+
+    column_list = ["title", "file_name", "is_active", "uploaded_at"]
+    column_searchable_list = ["title"]
+    column_filters = ["is_active"]
+
+    form_columns = ["title", "file_name", "external_link", "is_active"]
+
+    # 1. SUNTIKKAN CSS FILEPOND (Akan digabungkan ke master.html secara otomatis)
+    extra_css = [
+        "https://unpkg.com/filepond/dist/filepond.css",
+        "https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css",
+    ]
+
+    # 2. SUNTIKKAN JS FILEPOND & SCRIPT KUSTOM ANDA
+    extra_js = [
+        "https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js",
+        "https://unpkg.com/filepond/dist/filepond.js",
+        "/static/js/admin_custom.js",  # <-- Memanggil script inisialisasi
+    ]
+
+    form_extra_fields = {
+        "file_name": FileUploadField(
+            "Upload Berkas CV (Lokal)",
+            base_path=UPLOAD_PATH,
+            relative_path="uploads/",
+            allowed_extensions=["pdf", "doc", "docx"],
+        )
+    }
+
+    column_labels = {
+        "title": "Nama / Label CV",
+        "file_name": "Berkas CV (PDF/DOCX)",
+        "external_link": "Tautan Cloud Permanen (Alternatif Vercel)",
+        "is_active": "Aktifkan CV Ini di Frontend",
+        "uploaded_at": "Tanggal Unggah",
     }

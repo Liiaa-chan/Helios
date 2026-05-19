@@ -6,4 +6,5 @@ from .admin import (
     ArticleAdminView,
     ProjectAdminView,
     CategoryAdminView,
+    CVAdminView,
 )
