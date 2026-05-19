@@ -117,7 +117,7 @@ def create_route_handler(template_path, endpoint_name):
         # Kondisi 1: Mengambil data untuk halaman Resume
         if endpoint_name == "resume":
             context["experiences"] = Experience.query.order_by(
-                Experience.id.asc()
+                Experience.id.desc()
             ).all()
             context["active_cv"] = CV.query.filter_by(is_active=True).first()
 

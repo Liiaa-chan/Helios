@@ -13,35 +13,39 @@ from model import (
     Article,
     Project,
     Category,
-    CV, # Impor model baru CV
+    CV,
 )
 from flask_migrate import Migrate
-from config import Config
-
-# Impor Admin Views dari admin_views.py secara konsisten
 from config import (
-    MyAdminIndexView,
+    Config,
     MyAdminView,
     ExperienceView,
+    MyAdminIndexView,
     ArticleAdminView,
     ProjectAdminView,
     CategoryAdminView,
-    CVAdminView, # Impor view baru CVAdminView
+    CVAdminView,
 )
 
+# Integrasi otomatis pembacaan file .env untuk fleksibilitas lokal
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
 def create_app():
     app = Flask(__name__)
 
-    # 1. Load Konfigurasi dari Object
+    # 1. Load Konfigurasi dari Object (Membaca Environment Variables dari .env lokal atau Vercel)
     app.config.from_object(Config)
 
     # Deteksi lingkungan secara dinamis
+    # Vercel secara otomatis menyuntikkan env VERCEL=1 ke dalam serverless container
     is_vercel = os.environ.get("VERCEL") == "1" or app.config.get("IS_VERCEL", False)
     app.config["IS_VERCEL"] = is_vercel
+
+    # Tema gelap premium untuk panel Flask-Admin
+    app.config["FLASK_ADMIN_SWATCH"] = "cyborg"
 
     # 2. Inisialisasi Extension Database & Migrasi
     db.init_app(app)
@@ -57,12 +61,7 @@ def create_app():
         return User.query.get(int(user_id))
 
     # Setup Flask-Admin Dashboard
-    admin = Admin(
-        app, 
-        name="Super Admin", 
-        index_view=MyAdminIndexView(), 
-        base_template="admin/master.html" 
-    )
+    admin = Admin(app, name="Super Admin", index_view=MyAdminIndexView(base_template="admin/master.html"))
     admin.template_mode = "bootstrap4"
 
     # Registrasi Semua Halaman Manajemen Admin secara Konsisten menggunakan db.session
@@ -70,6 +69,7 @@ def create_app():
     admin.add_view(MyAdminView(Skill, db.session, name="Manage Skills"))
     admin.add_view(MyAdminView(Equipment, db.session, name="Manage Equipment"))
     admin.add_view(MyAdminView(NavItem, db.session, name="Manage Navigation"))
+    admin.add_view(CVAdminView(CV, db.session, name="Manage CV", category="Content"))
 
     admin.add_view(
         ArticleAdminView(
@@ -89,16 +89,6 @@ def create_app():
             Category,
             db.session,
             name="Manage Categories",
-            category="Content",
-        )
-    )
-    
-    # Registrasi Halaman CV Baru Anda
-    admin.add_view(
-        CVAdminView(
-            CV,
-            db.session,
-            name="Manage CV",
             category="Content",
         )
     )
@@ -124,6 +114,7 @@ def setup_database_schema(app):
         print("\n" + "=" * 60)
         if is_vercel:
             print("🪐 SISTEM HELIOS: BERJALAN DI SERVER CLOUD (VERCEL)")
+            # Sensor URI database untuk keamanan log Vercel
             db_uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
             masked_uri = db_uri.split("@")[-1] if "@" in db_uri else "Database Cloud"
             print(f"🔗 Database: PostgreSQL ({masked_uri})")
@@ -155,21 +146,29 @@ def setup_database_schema(app):
 
         if user_env and pass_env:
             try:
+                # Cari apakah user tersebut sudah terdaftar di database cloud / lokal
                 existing_user = User.query.filter_by(username=user_env).first()
 
                 if not existing_user:
+                    # Jika user belum ada, buat baru dan lakukan hashing password secara aman
                     new_user = User(username=user_env)
                     new_user.set_password(pass_env)
 
                     db.session.add(new_user)
                     db.session.commit()
-                    print(f"👤 Akun admin '{user_env}' sukses dibuat dan disimpan ke database!")
+                    print(
+                        f"👤 Akun admin '{user_env}' sukses dibuat dan disimpan ke database!"
+                    )
                 else:
-                    print(f"ℹ️ Akun admin '{user_env}' sudah terdaftar di database. Pembuatan dilewati.")
+                    print(
+                        f"ℹ️ Akun admin '{user_env}' sudah terdaftar di database. Pembuatan dilewati."
+                    )
             except Exception as e:
                 print(f"⚠️ Gagal memverifikasi / menyimpan user admin: {e}")
         else:
-            print("⚠️ PERINGATAN: ADMIN_USERNAME atau ADMIN_PASSWORD di environment masih kosong!")
+            print(
+                "⚠️ PERINGATAN: ADMIN_USERNAME atau ADMIN_PASSWORD di environment masih kosong!"
+            )
 
         print("=" * 60 + "\n")
 
@@ -178,4 +177,5 @@ def setup_database_schema(app):
 app = create_app()
 
 if __name__ == "__main__":
+    # Menjalankan dengan mode debug aktif jika dijalankan langsung di lokal
     app.run(debug=True)
