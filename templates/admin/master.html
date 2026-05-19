@@ -1,0 +1,255 @@
+{% extends 'admin/base.html' %} {% block head_css %}
+<!-- 1. Master Tema Gelap Cyborg Resmi -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/cyborg/bootstrap.min.css"
+    rel="stylesheet"
+/>
+
+<!-- 2. Pustaka Ikon FontAwesome -->
+<link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    rel="stylesheet"
+/>
+
+<!-- 3. Helper Inti Layout Flask-Admin Bootstrap 4 -->
+<link
+    href="{{ admin_static.url(filename='admin/css/bootstrap4/admin.css', v='1.1.1') }}"
+    rel="stylesheet"
+/>
+
+<!-- =========================================================================
+       4. SOLUSI UTAMA: PEMUATAN DINAMIS CSS KHUSUS VIEW (QUILL, FILEPOND, DLL.)
+       ========================================================================= -->
+{% if admin_view.extra_css %} {% for css_url in admin_view.extra_css %}
+<link href="{{ css_url }}" rel="stylesheet" />
+{% endfor %} {% endif %}
+
+<!-- 5. INSTRUMEN DUKUNGAN PENUH DARK MODE (QUILL, FILEPOND, SELECT2, DATEPICKER) -->
+<style>
+    /* Base Background Workstation */
+    body {
+        background-color: #060606 !important;
+    }
+    .btn-primary,
+    .btn-success {
+        background-color: #14b8a6 !important;
+        border-color: #0d9488 !important;
+        color: #060606 !important;
+        font-weight: 600;
+    }
+    .btn-primary:hover,
+    .btn-success:hover {
+        background-color: #2dd4bf !important;
+        border-color: #14b8a6 !important;
+    }
+
+    /* =========================================================================
+           1. PENYELARASAN INPUT STANDAR & LABELS (DIPERBAIKI AGAR TIDAK BENTROK)
+           ========================================================================= */
+    .form-control:not(.filepond--browser),
+    input[type="text"]:not([class*="filepond"]),
+    textarea:not([class*="ql-"]),
+    select {
+        background-color: #121214 !important;
+        border: 1px solid #27272a !important;
+        color: #f4f4f5 !important;
+        border-radius: 6px !important;
+    }
+    .form-control:focus {
+        border-color: #14b8a6 !important;
+        box-shadow: 0 0 0 0.2rem rgba(20, 184, 166, 0.15) !important;
+    }
+    label,
+    .control-label {
+        color: #a1a1aa !important;
+        font-weight: 500 !important;
+    }
+
+    /* =========================================================================
+           2. FIXING SELECT FIELDS (SELECT2 WORKSTATION ALIGNMENT - V3 & V4 SUPPORT)
+           ========================================================================= */
+    /* Kotak Utama Select2 (Mendukung v3 & v4 sekaligus) */
+    .select2-container--default .select2-selection--single,
+    .select2-container--default .select2-selection--multiple,
+    .select2-container .select2-choice,
+    .select2-container-multi .select2-choices,
+    select.form-control {
+        background-color: #121214 !important;
+        background-image: none !important; /* Hapus gradien bawaan v3 */
+        border: 1px solid #27272a !important;
+        border-radius: 6px !important;
+        min-height: calc(1.5em + 0.75rem + 2px) !important;
+        padding: 0.2rem 0.5rem !important;
+        color: #f4f4f5 !important;
+    }
+
+    /* Panah Dropdown Select2 */
+    .select2-container--default
+        .select2-selection--single
+        .select2-selection__arrow
+        b,
+    .select2-container .select2-choice .select2-arrow b {
+        border-color: #a1a1aa transparent transparent transparent !important;
+    }
+
+    /* Teks Hasil Pilihan di dalam Select2 */
+    .select2-container--default
+        .select2-selection--single
+        .select2-selection__rendered,
+    .select2-container .select2-choice .select2-chosen,
+    .select2-chosen {
+        color: #f4f4f5 !important;
+        background-color: transparent !important;
+        border: none !important;
+        line-height: 24px !important;
+        padding-left: 0 !important;
+    }
+
+    /* Tag Pill Pilihan Terpilih (Multiple Select) */
+    .select2-container--default
+        .select2-selection--multiple
+        .select2-selection__choice,
+    .select2-container-multi .select2-choices .select2-search-choice {
+        color: #f4f4f5 !important;
+        background-color: #27272a !important; /* Tag pill background zinc-800 */
+        border: 1px solid #3f3f46 !important; /* zinc-700 */
+        border-radius: 4px !important;
+        padding: 2px 8px !important;
+        margin-top: 2px !important;
+        margin-bottom: 2px !important;
+    }
+
+    /* Tombol Silang [X] Hapus Pilihan (Penyelarasan Gap dan Jarak Visual) */
+    .select2-container--default
+        .select2-selection--multiple
+        .select2-selection__choice__remove,
+    .select2-container-multi .select2-choices .select2-search-choice-close {
+        color: #ef4444 !important; /* Merah */
+        margin-right: 8px !important; /* Gap visual di sebelah kanan tombol close */
+        margin-left: 2px !important; /* Gap visual di sebelah kiri agar tidak menempel border kiri tag */
+        cursor: pointer !important;
+        display: inline-block !important;
+        transition: color 0.15s ease-in-out;
+    }
+    .select2-container--default
+        .select2-selection--multiple
+        .select2-selection__choice__remove:hover,
+    .select2-container-multi
+        .select2-choices
+        .select2-search-choice-close:hover {
+        color: #fca5a5 !important;
+    }
+
+    /* Dropdown List Pilihan saat Dibuka */
+    .select2-dropdown,
+    .select2-drop,
+    .select2-results {
+        background-color: #18181b !important; /* zinc-900 */
+        border: 1px solid #27272a !important;
+        color: #f4f4f5 !important;
+    }
+
+    /* Kolom Pencarian di dalam Dropdown List */
+    .select2-search input,
+    .select2-drop .select2-search input {
+        background-color: #121214 !important;
+        border: 1px solid #27272a !important;
+        color: #ffffff !important;
+        border-radius: 4px !important;
+        padding: 4px 8px !important;
+    }
+
+    /* Item yang Terpilih / Aktif */
+    .select2-results__option[aria-selected="true"],
+    .select2-results .select2-selected {
+        background-color: #27272a !important; /* zinc-800 */
+    }
+
+    /* Item yang Sedang Disorot Kursor (Hover) */
+    .select2-container--default
+        .select2-results__option--highlighted[aria-selected],
+    .select2-results .select2-highlighted {
+        background-color: #14b8a6 !important; /* Teal */
+        color: #060606 !important;
+    }
+
+    /* =========================================================================
+           3. FIXING QUILL JS RICH TEXT EDITOR (ANTI-COLLAPSE & DARK THEME)
+           ========================================================================= */
+    .ql-toolbar.ql-snow {
+        background-color: #18181b !important;
+        border: 1px solid #27272a !important;
+        border-top-left-radius: 6px !important;
+        border-top-right-radius: 6px !important;
+    }
+    .ql-container.ql-snow {
+        background-color: #121214 !important;
+        border: 1px solid #27272a !important;
+        border-bottom-left-radius: 6px !important;
+        border-bottom-right-radius: 6px !important;
+        color: #f4f4f5 !important;
+        min-height: 250px !important; /* Mencegah editor collapse mengkerut */
+        font-size: 1rem !important;
+    }
+    /* Mewarnai Ikon & Teks Toolbar Quill agar Terlihat Terang */
+    .ql-snow .ql-stroke {
+        stroke: #d4d4d8 !important;
+    }
+    .ql-snow .ql-fill {
+        fill: #d4d4d8 !important;
+    }
+    .ql-snow .ql-picker {
+        color: #d4d4d8 !important;
+    }
+    .ql-snow .ql-picker-options {
+        background-color: #18181b !important;
+        border-color: #27272a !important;
+    }
+
+    /* =========================================================================
+               4. FIXING FILEPOND IMAGE UPLOAD (ANTI-COLLAPSE & COMPACT DESIGN)
+               ========================================================================= */
+    .filepond--root {
+        min-height: 120px !important; /* Memaksa FilePond mempertahankan dimensinya */
+    }
+    .filepond--panel-root {
+        background-color: #121214 !important;
+        border: 2px dashed #3f3f46 !important;
+        border-radius: 6px !important;
+    }
+    .filepond--drop-label {
+        color: #a1a1aa !important;
+        cursor: pointer !important;
+    }
+
+    /* =========================================================================
+               5. FIXING DATEPICKER (MEREFLESKAN IKON KALENDER)
+               ========================================================================= */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1) brightness(0.9) !important; /* Membuat simbol kalender menjadi putih terang */
+        cursor: pointer !important;
+    }
+
+    /* =========================================================================
+               6. KUSTOMISASI IKON AKSI DATA TABLE (ORANGE & MERAH)
+               ========================================================================= */
+    .fa-pencil,
+    .fa-pencil-alt,
+    .fa-edit {
+        color: #f97316 !important;
+    }
+    .fa-pencil:hover,
+    .fa-pencil-alt:hover {
+        color: #fdba74 !important;
+    }
+    .fa-trash,
+    .fa-trash-alt,
+    .fa-trash-can {
+        color: #ef4444 !important;
+    }
+    .fa-trash:hover,
+    .fa-trash-alt:hover {
+        color: #fca5a5 !important;
+    }
+</style>
+{% endblock %}

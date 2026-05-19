@@ -1,11 +1,22 @@
-from flask import Blueprint, render_template, abort, redirect, url_for, flash, request
+from flask import Blueprint, render_template, abort, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from model import User
 from jinja2 import TemplateNotFound
 import json
+import cloudinary
+import cloudinary.uploader
 
 # Import Model
-from model.models import NavItem, Social, Skill, Equipment, Experience
+from model.models import (
+    NavItem,
+    Social,
+    Skill,
+    Equipment,
+    Experience,
+    Article,
+    Project,
+    CV,
+)
 
 # Inisiasi pages blueprint dengan folder templates sebagai views
 pages = Blueprint("pages", __name__, template_folder="templates")
@@ -36,14 +47,14 @@ def login():
 
         flash("Username atau password salah!", "error")
 
-    return render_template("pages/login.html")
+    return render_template("auth/login.html")
 
 
 @pages.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("pages.login"))
+    return redirect(url_for("auth/login.html"))
 
 
 def get_common_data():
@@ -103,10 +114,18 @@ def create_route_handler(template_path, endpoint_name):
             "equipment_data": equipment_data,
         }
 
+        # Kondisi 1: Mengambil data untuk halaman Resume
         if endpoint_name == "resume":
             context["experiences"] = Experience.query.order_by(
-                Experience.id.asc()
+                Experience.id.desc()
             ).all()
+            context["active_cv"] = CV.query.filter_by(is_active=True).first()
+
+        if endpoint_name == "articles":
+            context["articles"] = Article.query.order_by(Article.id.desc()).all()
+
+        if endpoint_name == "projects":
+            context["projects"] = Project.query.order_by(Project.id.desc()).all()
 
         try:
             return render_template(template_path, **context)
@@ -127,3 +146,79 @@ for route_path, template_path in ROUTE_MAPPINGS.items():
         endpoint=endpoint_name,  # Gunakan endpoint unik
         view_func=create_route_handler(template_path, endpoint_name),
     )
+
+
+# Routes Khusus untuk articles id.
+@pages.route("/articles/<string:slug>")
+def article_detail(slug):
+    """Handler menggunakan slug untuk rute detail yang ramah SEO"""
+    nav_item, socials, skills, equipment_data = get_common_data()
+
+    # Mencari data artikel berdasarkan kolom slug di database
+    article = Article.query.filter_by(slug=slug).first_or_404()
+
+    context = {
+        "nav_item": nav_item,
+        "socials": socials,
+        "skills": skills,
+        "equipment_data": equipment_data,
+        "item": article,  # Tetap dikirim sebagai 'item' agar Canvas mengenalnya
+        "back_url": url_for("pages.articles"),
+    }
+    return render_template("pages/detail_wrapper.html", **context)
+
+
+@pages.route("/projects/<string:slug>")
+def project_detail(slug):
+    """Handler Canvas Kosong untuk Detail Project menggunakan Slug"""
+    nav_item, socials, skills, equipment_data = get_common_data()
+    project = Project.query.filter_by(slug=slug).first_or_404()
+    context = {
+        "nav_item": nav_item,
+        "socials": socials,
+        "skills": skills,
+        "equipment_data": equipment_data,
+        "item": project,
+        "back_url": url_for("pages.projects"),
+    }
+    return render_template("pages/detail_wrapper.html", **context)
+
+
+@pages.route("/api/upload", methods=["POST"])
+def api_upload():
+    """Endpoint ringkas menerima file dari FilePond dan meneruskannya ke Cloudinary"""
+    # Pastikan request memiliki data file
+    if not request.files:
+        print("❌ CRASH API: Request.files kosong! FilePond tidak mengirimkan file berkas.")
+        return jsonify({"error": "Tidak ada file yang dikirim oleh FilePond"}), 400
+
+    file_key = next(iter(request.files), None)
+    uploaded_file = request.files[file_key]
+    
+    print(f"📦 API DETECTED: Mencoba mengunggah file '{uploaded_file.filename}' ke Cloudinary...")
+    
+    try:
+        # Alirkan langsung dari memori RAM ke server awan Cloudinary
+        upload_result = cloudinary.uploader.upload(
+            uploaded_file,
+            folder="helios_portfolio",
+            resource_type="auto"
+        )
+        
+        secure_url = upload_result.get("secure_url")
+        print(f"✅ UPLOAD SUCCESS: File berhasil di-host di Cloudinary -> {secure_url}")
+        
+        # Kirim balik URL HTTPS permanen ke FilePond frontend
+        return secure_url, 200
+        
+    except Exception as e:
+        # =========================================================================
+        # CETAK ERROR SEBENARNYA KE TERMINAL (Biang Kerok Asli Akan Muncul di Sini!)
+        # =========================================================================
+        print("\n" + "!" * 60)
+        print(f"❌ ERROR PADA /api/upload: {str(e)}")
+        import traceback
+        traceback.print_exc() # Mencetak runtutan baris kode yang menyebabkan crash
+        print("!" * 60 + "\n")
+        
+        return jsonify({"error": str(e)}), 500
