@@ -12,14 +12,8 @@
     --color-red-400: oklch(70.4% 0.191 22.216);
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-orange-500: oklch(70.5% 0.213 47.604);
-    --color-teal-300: oklch(85.5% 0.138 181.071);
     --color-teal-400: oklch(77.7% 0.152 181.912);
     --color-teal-500: oklch(70.4% 0.14 182.503);
-    --color-gray-400: oklch(70.7% 0.022 261.325);
-    --color-gray-500: oklch(55.1% 0.027 264.364);
-    --color-gray-600: oklch(44.6% 0.03 256.802);
-    --color-gray-700: oklch(37.3% 0.034 259.733);
-    --color-gray-800: oklch(27.8% 0.033 256.848);
     --color-zinc-50: oklch(98.5% 0 0);
     --color-zinc-100: oklch(96.7% 0.001 286.375);
     --color-zinc-200: oklch(92% 0.004 286.32);
@@ -62,6 +56,7 @@
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
     --tracking-tight: -0.025em;
+    --tracking-wider: 0.05em;
     --tracking-widest: 0.1em;
     --leading-tight: 1.25;
     --leading-relaxed: 1.625;
@@ -339,6 +334,9 @@
   .mb-2 {
     margin-bottom: calc(var(--spacing) * 2);
   }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
+  }
   .mb-6 {
     margin-bottom: calc(var(--spacing) * 6);
   }
@@ -371,9 +369,6 @@
   }
   .inline-flex {
     display: inline-flex;
-  }
-  .table {
-    display: table;
   }
   .aspect-video {
     aspect-ratio: var(--aspect-video);
@@ -444,17 +439,11 @@
   .flex-1 {
     flex: 1;
   }
-  .flex-shrink {
-    flex-shrink: 1;
-  }
   .shrink-0 {
     flex-shrink: 0;
   }
   .flex-grow {
     flex-grow: 1;
-  }
-  .border-collapse {
-    border-collapse: collapse;
   }
   .origin-bottom-right {
     transform-origin: 100% 100%;
@@ -512,12 +501,6 @@
   }
   .justify-start {
     justify-content: flex-start;
-  }
-  .gap-1 {
-    gap: calc(var(--spacing) * 1);
-  }
-  .gap-1\.5 {
-    gap: calc(var(--spacing) * 1.5);
   }
   .gap-2 {
     gap: calc(var(--spacing) * 2);
@@ -646,26 +629,17 @@
     border-left-style: var(--tw-border-style);
     border-left-width: 1px;
   }
-  .border-red-500 {
-    border-color: var(--color-red-500);
-  }
   .border-red-500\/30 {
     border-color: color-mix(in srgb, oklch(63.7% 0.237 25.331) 30%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-red-500) 30%, transparent);
     }
   }
-  .border-teal-400 {
-    border-color: var(--color-teal-400);
-  }
   .border-teal-400\/20 {
     border-color: color-mix(in srgb, oklch(77.7% 0.152 181.912) 20%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-teal-400) 20%, transparent);
     }
-  }
-  .border-teal-500 {
-    border-color: var(--color-teal-500);
   }
   .border-teal-500\/20 {
     border-color: color-mix(in srgb, oklch(70.4% 0.14 182.503) 20%, transparent);
@@ -687,9 +661,6 @@
   }
   .border-x-zinc-800 {
     border-inline-color: var(--color-zinc-800);
-  }
-  .bg-red-500 {
-    background-color: var(--color-red-500);
   }
   .bg-red-500\/10 {
     background-color: color-mix(in srgb, oklch(63.7% 0.237 25.331) 10%, transparent);
@@ -808,11 +779,11 @@
   .pt-4 {
     padding-top: calc(var(--spacing) * 4);
   }
-  .pb-0 {
-    padding-bottom: calc(var(--spacing) * 0);
-  }
   .pb-0\.5 {
     padding-bottom: calc(var(--spacing) * 0.5);
+  }
+  .pb-4 {
+    padding-bottom: calc(var(--spacing) * 4);
   }
   .pb-12 {
     padding-bottom: calc(var(--spacing) * 12);
@@ -892,15 +863,16 @@
     --tw-tracking: var(--tracking-tight);
     letter-spacing: var(--tracking-tight);
   }
+  .tracking-wider {
+    --tw-tracking: var(--tracking-wider);
+    letter-spacing: var(--tracking-wider);
+  }
   .tracking-widest {
     --tw-tracking: var(--tracking-widest);
     letter-spacing: var(--tracking-widest);
   }
   .text-pretty {
     text-wrap: pretty;
-  }
-  .text-wrap {
-    text-wrap: wrap;
   }
   .text-red-400 {
     color: var(--color-red-400);
@@ -976,10 +948,6 @@
     --tw-shadow: inset 0 2px 4px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.05));
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
-  .outline {
-    outline-style: var(--tw-outline-style);
-    outline-width: 1px;
-  }
   .blur-\[2px\] {
     --tw-blur: blur(2px);
     filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
@@ -1006,10 +974,6 @@
   }
   .backdrop-blur-xl {
     --tw-backdrop-blur: blur(var(--blur-xl));
-    -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-    backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-  }
-  .backdrop-filter {
     -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
     backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
   }
@@ -1338,6 +1302,68 @@
     }
   }
 }
+.ql-editor {
+  padding: 0 !important;
+  color: #d4d4d8 !important;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+.ql-editor p, .ql-editor span, .ql-editor strong, .ql-editor em, .ql-editor li {
+  color: inherit;
+}
+.ql-editor span[style*="color: rgb(0, 0, 0)"], .ql-editor span[style*="color: rgb(33, 37, 41)"], .ql-editor span[style*="color: rgb(51, 51, 51)"], .ql-editor span[style*="color: #000000"], .ql-editor span[style*="color: #111111"], .ql-editor span[style*="color: #222222"], .ql-editor span[style*="color: #333333"], .ql-editor p[style*="color: rgb(0, 0, 0)"], .ql-editor p[style*="color: #000000"] {
+  color: inherit !important;
+}
+.ql-editor h1, .ql-editor h2, .ql-editor h3, .ql-editor h4 {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  margin-top: 1.75rem !important;
+  margin-bottom: 0.75rem !important;
+  letter-spacing: -0.02em;
+}
+.ql-editor h1 {
+  font-size: 1.75rem !important;
+}
+.ql-editor h2 {
+  font-size: 1.5rem !important;
+}
+.ql-editor h3 {
+  font-size: 1.25rem !important;
+}
+.ql-editor p {
+  margin-bottom: 1.25rem !important;
+}
+.ql-editor ul, .ql-editor ol {
+  padding-left: 1.5em !important;
+  margin-bottom: 1.25rem !important;
+}
+.ql-editor ul {
+  list-style-type: disc !important;
+}
+.ql-editor ol {
+  list-style-type: decimal !important;
+}
+.ql-editor li {
+  margin-bottom: 0.5rem !important;
+  color: #d4d4d8 !important;
+}
+.ql-editor blockquote {
+  border-left: 4px solid #14b8a6 !important;
+  padding-left: 1.25rem !important;
+  margin: 1.5rem 0 !important;
+  font-style: italic !important;
+  color: #a1a1aa !important;
+}
+.ql-editor a {
+  color: #2dd4bf !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+.ql-editor a:hover {
+  color: #14b8a6 !important;
+}
 .ql-code-block-container {
   background-color: #09090b !important;
   border: 1px solid #27272a !important;
@@ -1524,11 +1550,6 @@ pre.ql-syntax:hover .btn-copy-code, .ql-code-block-container:hover .btn-copy-cod
   inherits: false;
   initial-value: 0 0 #0000;
 }
-@property --tw-outline-style {
-  syntax: "*";
-  inherits: false;
-  initial-value: solid;
-}
 @property --tw-blur {
   syntax: "*";
   inherits: false;
@@ -1541,7 +1562,7 @@ pre.ql-syntax:hover .btn-copy-code, .ql-code-block-container:hover .btn-copy-cod
   syntax: "*";
   inherits: false;
 }
-@property --tw-grayscale {  
+@property --tw-grayscale {
   syntax: "*";
   inherits: false;
 }
@@ -1669,7 +1690,6 @@ pre.ql-syntax:hover .btn-copy-code, .ql-code-block-container:hover .btn-copy-cod
       --tw-ring-offset-width: 0px;
       --tw-ring-offset-color: #fff;
       --tw-ring-offset-shadow: 0 0 #0000;
-      --tw-outline-style: solid;
       --tw-blur: initial;
       --tw-brightness: initial;
       --tw-contrast: initial;
