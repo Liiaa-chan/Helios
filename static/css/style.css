@@ -8,7 +8,6 @@
 @import "tailwindcss";
 
 /* Custom Theme CSS */
-
 @theme {
     --font-inter: "Inter", sans-serif;
     --font-bebas-neue: "Bebas Neue", sans-serif;
@@ -22,77 +21,124 @@
             var(--color-zinc-700) 7px);
 }
 
-/* Styling Dasar Pengaman jika browser terlambat memuat JavaScript */
-.ql-code-block-container {
-    background-color: #09090b !important;
-    border: 1px solid #27272a !important;
-    padding: 1.5rem 1rem 1rem 1rem !important;
-    border-radius: 0.5rem;
-    font-family: "Geist Mono", "Courier New", Courier, monospace !important;
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: #f4f4f5 !important;
+
+/* ======================================================================= */
+/* RICH TEXT CONTENT STYLING (Quill JS Editor View Alignment)             */
+/* Menyelaraskan output artikel agar serasi dengan skema warna gelap      */
+/* ======================================================================= */
+
+.ql-editor {
+    padding: 0 !important;
+    color: #d4d4d8 !important;
+    /* zinc-300 */
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+/* Memastikan semua elemen teks di dalam ql-editor mewarisi warna terang bawaan */
+.ql-editor p,
+.ql-editor span,
+.ql-editor strong,
+.ql-editor em,
+.ql-editor li {
+    color: inherit;
+}
+
+/* =========================================================================
+   SOLUSI PINTAR: Override & bersihkan paksa warna gelap bawaan hasil copy-paste 
+   tanpa mengganggu warna cerah kustom yang sengaja Anda buat di editor.
+   ========================================================================= */
+.ql-editor span[style*="color: rgb(0, 0, 0)"],
+.ql-editor span[style*="color: rgb(33, 37, 41)"],
+.ql-editor span[style*="color: rgb(51, 51, 51)"],
+.ql-editor span[style*="color: #000000"],
+.ql-editor span[style*="color: #111111"],
+.ql-editor span[style*="color: #222222"],
+.ql-editor span[style*="color: #333333"],
+.ql-editor p[style*="color: rgb(0, 0, 0)"],
+.ql-editor p[style*="color: #000000"] {
+    color: inherit !important;
+}
+
+/* Memaksa elemen judul di dalam artikel berukuran proporsional dan tebal */
+.ql-editor h1,
+.ql-editor h2,
+.ql-editor h3,
+.ql-editor h4 {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    margin-top: 1.75rem !important;
+    margin-bottom: 0.75rem !important;
+    letter-spacing: -0.02em;
+}
+
+.ql-editor h1 {
+    font-size: 1.75rem !important;
+}
+
+.ql-editor h2 {
+    font-size: 1.5rem !important;
+}
+
+.ql-editor h3 {
+    font-size: 1.25rem !important;
+}
+
+/* Penyelarasan paragraf */
+.ql-editor p {
+    margin-bottom: 1.25rem !important;
+}
+
+/* Penyelarasan List Bullet dan Ordered List agar tidak terhapus Tailwind preflight */
+.ql-editor ul,
+.ql-editor ol {
+    padding-left: 1.5em !important;
+    margin-bottom: 1.25rem !important;
+}
+
+.ql-editor ul {
+    list-style-type: disc !important;
+}
+
+.ql-editor ol {
+    list-style-type: decimal !important;
+}
+
+.ql-editor li {
+    margin-bottom: 0.5rem !important;
+    color: #d4d4d8 !important;
+}
+
+/* Penyelarasan Teks Kutipan (Blockquote) */
+.ql-editor blockquote {
+    border-left: 4px solid #14b8a6 !important;
+    /* Border Teal */
+    padding-left: 1.25rem !important;
     margin: 1.5rem 0 !important;
-    overflow-x: auto;
-}
-
-.ql-code-block {
-    white-space: pre !important;
-    font-family: inherit !important;
-}
-
-/* Mengatur blok kode bawaan Quill agar mendukung posisi tombol copy absolute */
-pre.ql-syntax {
-    position: relative;
-    padding: 1.75rem 1rem 1rem 1rem !important;
-    border-radius: 0.5rem;
-    border: 1px solid #27272a !important;
-    /* zinc-800 */
-    background-color: #09090b !important;
-    /* zinc-950 */
-    font-family: "Geist Mono", "Courier New", Courier, monospace !important;
-    font-size: 0.875rem;
-    line-height: 1.6;
-    overflow-x: auto;
-    margin: 1.5rem 0 !important;
-}
-
-/* Gaya Desain Tombol Copy Minimalis */
-.btn-copy-code {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background-color: #18181b;
-    /* zinc-900 */
-    border: 1px solid #27272a;
-    /* zinc-800 */
-    color: #a1a1aa;
+    font-style: italic !important;
+    color: #a1a1aa !important;
     /* zinc-400 */
-    padding: 0.25rem 0.5rem;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    opacity: 0;
-    /* Sembunyi sebelum kursor diarahkan */
-    z-index: 10;
 }
 
-/* Munculkan tombol ketika blok kode di-hover */
-pre.ql-syntax:hover .btn-copy-code,
-.ql-code-block-container:hover .btn-copy-code {
-    opacity: 1;
+/* Penyelarasan tautan link di dalam artikel */
+.ql-editor a {
+    color: #2dd4bf !important;
+    /* Teal-400 */
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+    transition: color 0.2s;
 }
 
-.btn-copy-code:hover {
-    background-color: #27272a;
-    color: #2dd4bf;
-    /* teal-400 */
-    border-color: rgba(45, 212, 191, 0.3);
+.ql-editor a:hover {
+    color: #14b8a6 !important;
 }
+
+
+/* ======================================================================= */
+/* CODE SNIPPET SYNTAX STYLING (Quill 2.0 & Highlight.js Integration)     */
+/* Menata tampilan blok kode di halaman detail secara otomatis.            */
+/* ======================================================================= */
 
 /* Styling Dasar Pengaman jika browser terlambat memuat JavaScript */
 .ql-code-block-container {
