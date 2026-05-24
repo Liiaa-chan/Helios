@@ -1,20 +1,33 @@
-{% extends "base/base.html" %} {% block title %} Dian Wicaksono - {{ item.title
-}} {% endblock %} {% block content %}
+{% extends "base/base.html" %}
+
+<!-- Block Title -->
+{% block title %} Dian Wicaksono - {{ item.title }} {% endblock %}
+
+<!-- Content -->
+{% block content %}
 <article class="py-6 space-y-8 max-w-4xl mx-auto">
     <div class="space-y-4">
+        <!-- Tombol Kembali yang Minimalis -->
+        <a
+            href="{{ back_url }}"
+            class="text-zinc-500 hover:text-teal-400 text-sm font-mono inline-flex items-center gap-2 mb-4 transition-colors"
+        >
+            <i class="fa-solid fa-arrow-left"></i> Back to list
+        </a>
+
         <div class="flex flex-wrap gap-2">
             {% if item.get_category_list %} {# Melakukan perulangan badge
             kategori berdasarkan relasi model #} {% for cat in
             item.get_category_list() %}
             <span
-                class="bg-teal-500/10 text-teal-400 border border-teal-500/20 px-3 py-1 text-xs font-bold uppercase"
+                class="bg-teal-500/10 text-teal-400 border border-teal-500/20 px-3 py-1 text-xs font-bold uppercase tracking-wider"
             >
                 {{ cat }}
             </span>
             {% endfor %} {% else %} {# Fallback jika tidak ada kategori
             terdaftar #}
             <span
-                class="bg-teal-500/10 text-teal-400 border border-teal-500/20 px-3 py-1 text-xs font-bold uppercase"
+                class="bg-teal-500/10 text-teal-400 border border-teal-500/20 px-3 py-1 text-xs font-bold uppercase tracking-wider"
             >
                 Technical Project
             </span>
@@ -28,9 +41,11 @@
         </h1>
 
         <div
-            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-b border-zinc-900"
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-b border-zinc-900 pb-4"
         >
-            <time class="text-sm text-zinc-500 font-medium uppercase gap-1.5">
+            <time
+                class="text-sm text-zinc-500 font-medium uppercase tracking-wider"
+            >
                 {{ item.date }}
             </time>
 
@@ -52,31 +67,34 @@
         </div>
     </div>
 
+    <!-- Image Area: Cloudinary & Local Fallback Secure Parser -->
     {% if item.image_url %}
     <div
         class="border border-zinc-800 bg-zinc-900 overflow-hidden aspect-video w-full"
     >
-        {# Mengecek apakah gambar menggunakan link luar seeder atau unggahan
-        lokal secara aman #} {% if item.image_url and
-        item.image_url.startswith('http') %}
+        {% if item.image_url.startswith('http') %}
         <img
             src="{{ item.image_url }}"
             alt="{{ item.title }}"
             class="w-full h-full object-cover"
             loading="lazy"
         />
-        {% elif item.image_url %}
+        {% else %}
         <img
-            src="{{ url_for('static', filename=item.image_url) }}"
+            src="{% if '/' in item.image_url %}{{ url_for('static', filename=item.image_url) }}{% else %}{{ url_for('static', filename='uploads/' + item.image_url) }}{% endif %}"
             alt="{{ item.title }}"
             class="w-full h-full object-cover"
             loading="lazy"
         />
         {% endif %}
     </div>
-    {% endif %} {# Konten Rich Text dari Quill JS #}
-    <div class="text-base text-zinc-300 leading-relaxed space-y-2 font-normal">
-        {{ item.content | safe }}
+    {% endif %}
+
+    <!-- =========================================================================
+         2. BUNGKUS KONTEN DENGAN KLAS QL-SNOW & QL-EDITOR UNTUK FORMAT PERSISIS
+         ========================================================================= -->
+    <div class="ql-snow">
+        <div class="ql-editor">{{ item.content | safe }}</div>
     </div>
 </article>
 {% endblock %}
