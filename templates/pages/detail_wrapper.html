@@ -7,14 +7,6 @@
 {% block content %}
 <article class="py-6 space-y-8 max-w-4xl mx-auto">
     <div class="space-y-4">
-        <!-- Tombol Kembali yang Minimalis -->
-        <a
-            href="{{ back_url }}"
-            class="text-zinc-500 hover:text-teal-400 text-sm font-mono inline-flex items-center gap-2 mb-4 transition-colors"
-        >
-            <i class="fa-solid fa-arrow-left"></i> Back to list
-        </a>
-
         <div class="flex flex-wrap gap-2">
             {% if item.get_category_list %} {# Melakukan perulangan badge
             kategori berdasarkan relasi model #} {% for cat in
