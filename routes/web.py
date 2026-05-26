@@ -7,6 +7,7 @@ from flask import (
     flash,
     request,
     jsonify,
+    make_response,
 )
 import os
 import json
@@ -30,7 +31,6 @@ from model.models import (
     Project,
     CV,
 )
-
 
 # ---------------------------------------------------------------------------
 # Blueprint Setup
@@ -57,6 +57,7 @@ ROUTE_MAPPINGS = {
 # Di serverless environment (Vercel, AWS Lambda), state modul bisa di-reset
 # antar invokasi, sehingga config top-level tidak bisa diandalkan.
 # ---------------------------------------------------------------------------
+
 
 def configure_cloudinary():
     """
@@ -96,6 +97,7 @@ def configure_cloudinary():
 # Auth Routes
 # ---------------------------------------------------------------------------
 
+
 @pages.route("/login", methods=["GET", "POST"])
 def login():
     # Jika sudah login, redirect ke halaman admin
@@ -128,6 +130,7 @@ def logout():
 # Helper: Data Umum Semua Halaman
 # ---------------------------------------------------------------------------
 
+
 def get_common_data():
     """Mengambil data dasar yang dibutuhkan oleh semua halaman (navbar, footer, dll)."""
     nav_items = NavItem.query.all()
@@ -157,6 +160,7 @@ def get_common_data():
 # Error Handler
 # ---------------------------------------------------------------------------
 
+
 @pages.app_errorhandler(404)
 def page_not_found(e):
     nav_item, socials, skills, _ = get_common_data()
@@ -175,6 +179,7 @@ def page_not_found(e):
 # Dynamic Route Handler
 # ---------------------------------------------------------------------------
 
+
 def create_route_handler(template_path, endpoint_name):
     """Membuat handler rute secara dinamis dengan endpoint unik per rute."""
 
@@ -189,7 +194,9 @@ def create_route_handler(template_path, endpoint_name):
         }
 
         if endpoint_name == "resume":
-            context["experiences"] = Experience.query.order_by(Experience.id.desc()).all()
+            context["experiences"] = Experience.query.order_by(
+                Experience.id.desc()
+            ).all()
             context["active_cv"] = CV.query.filter_by(is_active=True).first()
 
         if endpoint_name == "articles":
@@ -221,6 +228,7 @@ for route_path, template_path in ROUTE_MAPPINGS.items():
 # ---------------------------------------------------------------------------
 # Detail Routes (SEO-friendly slug)
 # ---------------------------------------------------------------------------
+
 
 @pages.route("/articles/<string:slug>")
 def article_detail(slug):
@@ -260,6 +268,7 @@ def project_detail(slug):
 # API Upload (Cloudinary via FilePond)
 # ---------------------------------------------------------------------------
 
+
 @pages.route("/api/upload", methods=["POST"])
 def api_upload():
     """
@@ -271,9 +280,14 @@ def api_upload():
 
     # Step 1: Pastikan Cloudinary terkonfigurasi dengan benar sebelum upload
     if not configure_cloudinary():
-        return jsonify({
-            "error": "Konfigurasi Cloudinary gagal. Pastikan CLOUDINARY_URL sudah diset di environment."
-        }), 500
+        return (
+            jsonify(
+                {
+                    "error": "Konfigurasi Cloudinary gagal. Pastikan CLOUDINARY_URL sudah diset di environment."
+                }
+            ),
+            500,
+        )
 
     # Step 2: Validasi keberadaan file dalam request
     if not request.files:
@@ -304,3 +318,60 @@ def api_upload():
         print(f"❌ CLOUDINARY UPLOAD FAILED: {str(e)}")
         traceback.print_exc()
         return jsonify({"error": f"Cloudinary Upload Failed: {str(e)}"}), 500
+
+
+# XML For Crawl Data
+@pages.route("/sitemap.xml", methods=["GET"])
+def sitemap():
+    """Menghasilkan peta situs XML secara dinamis untuk Googlebot"""
+    base_url = "https://dianwicaksono.my.id/"
+
+    # 1. Daftar halaman statis utama
+    static_pages = [
+        {"loc": f"{base_url}/", "changefreq": "daily", "priority": "1.0"},
+        {"loc": f"{base_url}/resume", "changefreq": "monthly", "priority": "0.8"},
+        {"loc": f"{base_url}/articles", "changefreq": "daily", "priority": "0.9"},
+        {"loc": f"{base_url}/projects", "changefreq": "daily", "priority": "0.9"},
+    ]
+
+    # 2. Ambil halaman dinamis dari database secara asinkron
+    try:
+        articles = Article.query.all()
+        for article in articles:
+            static_pages.append(
+                {
+                    "loc": f"{base_url}/articles/{article.slug}",
+                    "changefreq": "weekly",
+                    "priority": "0.7",
+                }
+            )
+
+        projects = Project.query.all()
+        for project in projects:
+            static_pages.append(
+                {
+                    "loc": f"{base_url}/projects/{project.slug}",
+                    "changefreq": "weekly",
+                    "priority": "0.7",
+                }
+            )
+    except Exception as e:
+        print(f"⚠️ Gagal memuat data dinamis untuk sitemap: {e}")
+
+    # 3. Rakit dokumen XML standar sitemap
+    xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+
+    for page in static_pages:
+        xml_content += "  <url>\n"
+        xml_content += f'    <loc>{page["loc"]}</loc>\n'
+        xml_content += f'    <changefreq>{page["changefreq"]}</changefreq>\n'
+        xml_content += f'    <priority>{page["priority"]}</priority>\n'
+        xml_content += "  </url>\n"
+
+    xml_content += "</urlset>"
+
+    # Kembalikan response berupa text/xml murni agar bisa diparsing Google
+    response = make_response(xml_content)
+    response.headers["Content-Type"] = "application/xml"
+    return response
