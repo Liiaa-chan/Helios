@@ -71,3 +71,4 @@ python <python_file.py>
 ```
 
 If everything is set up correctly, the application should be accessible at http://127.0.0.1:5000.
+
