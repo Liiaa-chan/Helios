@@ -1,6 +1,6 @@
 /*! tailwindcss v4.2.4 | MIT License | https://tailwindcss.com */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 @layer properties;
 @layer theme, base, components, utilities;
 @layer theme {
@@ -720,7 +720,7 @@
     }
   }
   .bg-diagonal-lines {
-    background-image: repeating-linear-gradient(-45deg, transparent, transparent 5px, var(--color-zinc-800) 5px, var(--color-zinc-700) 7px);
+    background-image: repeating-linear-gradient( -45deg, transparent, transparent 5px, var(--color-zinc-800) 5px, var(--color-zinc-700) 7px );
   }
   .object-cover {
     object-fit: cover;
@@ -1414,6 +1414,9 @@ pre.ql-syntax:hover .btn-copy-code, .ql-code-block-container:hover .btn-copy-cod
   background-color: #27272a;
   color: #2dd4bf;
   border-color: rgba(45, 212, 191, 0.3);
+}
+#instantclick {
+  display: none;
 }
 @property --tw-scale-x {
   syntax: "*";

@@ -1,8 +1,8 @@
 /* Fonts Inter */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 /* Font Bebas Neue */
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 
 /* Tailwindcss init */
 @import "tailwindcss";
@@ -14,13 +14,14 @@
 }
 
 @utility bg-diagonal-lines {
-    background-image: repeating-linear-gradient(-45deg,
-            transparent,
-            transparent 5px,
-            var(--color-zinc-800) 5px,
-            var(--color-zinc-700) 7px);
+    background-image: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 5px,
+        var(--color-zinc-800) 5px,
+        var(--color-zinc-700) 7px
+    );
 }
-
 
 /* ======================================================================= */
 /* RICH TEXT CONTENT STYLING (Quill JS Editor View Alignment)             */
@@ -31,7 +32,11 @@
     padding: 0 !important;
     color: #d4d4d8 !important;
     /* zinc-300 */
-    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-family:
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        sans-serif;
     font-size: 1rem;
     line-height: 1.8;
 }
@@ -134,7 +139,6 @@
     color: #14b8a6 !important;
 }
 
-
 /* ======================================================================= */
 /* CODE SNIPPET SYNTAX STYLING (Quill 2.0 & Highlight.js Integration)     */
 /* Menata tampilan blok kode di halaman detail secara otomatis.            */
@@ -210,4 +214,9 @@ pre.ql-syntax:hover .btn-copy-code,
     color: #2dd4bf;
     /* teal-400 */
     border-color: rgba(45, 212, 191, 0.3);
+}
+
+/* Instan Click Styling */
+#instantclick {
+    display: none;
 }
