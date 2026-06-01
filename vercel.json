@@ -1,9 +1,16 @@
 {
-    "version" : 2,
-    "builds": [
-        {"src" : "main.py", "use":"@vercel/python"}
-    ],
-    "routes":[
-        {"src": "/(.*)", "dest": "main.py"}
+    "version": 2,
+    "builds": [{ "src": "main.py", "use": "@vercel/python" }],
+    "routes": [{ "src": "/(.*)", "dest": "main.py" }],
+    "headers": [
+        {
+            "source": "/static/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
+            ]
+        }
     ]
 }
