@@ -48,6 +48,13 @@
         />
 
         <link
+            href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+            media="print"
+            onload="this.media = 'all'"
+        />
+
+        <link
             rel="stylesheet"
             href="{{ url_for('static', filename='dist/output.css') }}"
         />
@@ -99,6 +106,13 @@
         </main>
         <!-- Footer -->
         {% include "includes/_footer.html" %}
+
+        <!-- InstantClick Engine -->
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/instantclick/3.1.0/instantclick.min.js"
+            data-no-instant
+            defer
+        ></script>
         <!-- Javascript -->
         <script
             src="{{ url_for('static', filename='js/script.js') }}"
@@ -111,11 +125,6 @@
             defer
         ></script>
 
-        <!-- InstantClick Engine -->
-        <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/instantclick/3.1.0/instantclick.min.js"
-            data-no-instant
-        ></script>
         <script data-no-instant>
             InstantClick.init();
         </script>
