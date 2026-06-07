@@ -9,6 +9,8 @@ Ensure you have the following installed on your system:
 -   Python 3.x
 -   Git
 -   Virtualenv (optional, but recommended)
+-   Node js (redesign with tailwindcss)
+-   Npm
 
 ## Step 1: Clone the repository
 
@@ -62,7 +64,39 @@ pip install -r requirements.txt
 
 This will install Flask and any other necessary packages.
 
-## Step 4: Run the application
+## Step 4: Install dependencies (Node Modules)
+
+With your virtual environment active, install the required dependencies:
+
+```
+npm install
+```
+
+This will install necessary packages in node js.
+
+## Step 5: Running node js for tailwindcss (Node Modules)
+
+With your virtual environment active, install the required dependencies:
+
+```
+npx tailwindcss -i ./src/input.css -o ./src/output.css --watch 
+```
+
+To build simple command you can access package.json and adding this command.
+
+```
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "npx @tailwindcss/cli -i ./static/css/style.css -o ./static/dist/output.css --watch"
+  },
+```
+
+Then you can just running tailwindcss with a simple command like.
+
+```
+npm run dev
+```
+## Step 6: Run the application
 
 Finally, you can run the Flask application with the following command:
 
